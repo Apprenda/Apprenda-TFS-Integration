@@ -1,0 +1,112 @@
+{
+  "id": "fb765e50-c211-11e6-9471-0d5c99017b97",
+  "name": "ApprendaBindAddonInstance",
+  "friendlyName": "Apprenda - Bind Addon Instance",
+  "description": "This task binds your application with an Apprenda addon, via configuration file injection.",
+  "author": "Apprenda",
+  "helpMarkDown": "This task is a simple utility that tells TFS | VSTS where to store an Addon Instance token in your config file",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "demands": [],
+  "version": {
+    "Major": "1",
+    "Minor": "0",
+    "Patch": "0"
+  },
+  "minimumAgentVersion": "1.95.0",
+  "instanceNameFormat": "ApprendaDeployAddon $(message)",
+  "groups": [
+      {
+          "name": "AddonInfo",
+          "displayName": "Addon Information",
+          "isExpanded": true
+      },
+      {
+          "name": "ConnInfo",
+          "displayName": "Connection Information",
+          "isExpanded": true
+      }
+  ],
+  "inputs": [
+      {
+          "name": "addonalias",
+          "type": "string",
+          "label": "Addon Alias",
+          "defaultValue": "",
+          "required": true,
+          "helpMarkDown": "This is the name of the addon located in Apprenda.",
+          "groupName": "AddonInfo"
+      },
+      {
+          "name": "instancealias",
+          "type": "string",
+          "label": "Addon Instance Alias",
+          "defaultValue": "",
+          "required": true,
+          "helpMarkDown": "This is the name of the addon instance alias you provisioned; check your developer portal for this information.",
+          "groupName": "AppInfo"
+      },
+      {
+          "name": "targetfile",
+          "type": "string",
+          "label": "Version Prefix",
+          "defaultValue": "app.config, web.config",
+          "required": false,
+          "helpMarkDown": "This tells TFS which file to look in. If no file is specified, we'll default to app.config and web.config",
+          "groupName": "AppInfo"
+      },
+      {
+          "name": "appsettingskey",
+          "type": "string",
+          "label": "AppSettings Key",
+          "defaultValue": "",
+          "required": true,
+          "helpMarkDown": "This is the desired stage of deployment. The value of this should be located here: ```<appsettings><add key=\"appsettingskey\" value=\"\"></appsettings>```",
+          "groupName": "AppInfo"
+      },
+      {
+          "name": "cloudurl",
+          "type": "string",
+          "label": "Apprenda Cloud URL",
+          "defaultValue": "$(cloudurl)",
+          "required": true,
+          "helpMarkDown": "This is the base cloud URL that is used to connect to ACP.",
+          "groupName": "ConnInfo"
+      },
+      {
+          "name": "clouduser",
+          "type": "string",
+          "label": "Apprenda Username",
+          "defaultValue": "$(apprendauser)",
+          "required": true,
+          "helpMarkDown": "This is the username that is used to connect to ACP.",
+          "groupName": "ConnInfo"
+      },
+      {
+          "name": "cloudpw",
+          "type": "string",
+          "label": "Apprenda Password",
+          "defaultValue": "$(apprendapw)",
+          "required": true,
+          "helpMarkDown": "This is the password that is used to connect to ACP.",
+          "groupName": "ConnInfo"
+      },
+      {
+          "name": "clouddevteam",
+          "type": "string",
+          "label": "Apprenda Development Team",
+          "defaultValue": "$(devteam)",
+          "required": true,
+          "helpMarkDown": "This is the development team alias that is used to connect to ACP.",
+          "groupName": "ConnInfo"
+      }
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "bind.ps1"
+    }
+  }
+}
