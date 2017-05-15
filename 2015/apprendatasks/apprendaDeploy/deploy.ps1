@@ -31,6 +31,10 @@ try {
     Write-Verbose "Gathering VSO variables."
     $pathtozip = Get-VstsInput -Name pathtozip -Require
     $alias = Get-VstsInput -Name alias -Require
+    $name = Get-VstsInput -Name name
+    if ($name -eq $null){
+        $name = $alias
+    }
     $versionPrefix = Get-VstsInput -Name versionPrefix -Require
     $stage = Get-VstsInput -Name stage -Require
     $cloudurl = Get-VstsInput -Name cloudurl -Require
@@ -43,6 +47,7 @@ try {
     Write-Verbose "*         Input Check                               "
     Write-Verbose "* pathtozip= $pathtozip"
     Write-Verbose "* alias= $alias"
+    Write-Verbose "* name= $name"
     Write-Verbose "* versionPrefix= $versionPrefix"
     Write-Verbose "* stage= $stage"
     Write-Verbose "* cloudurl= $cloudurl"
@@ -100,7 +105,7 @@ try {
         if(-not $appexists)
         {
             Write-Host "Application does not exist, creating $alias."
-            CreateNewApplication $alias $alias ""
+            CreateNewApplication $alias $name ""
             # when an application is created, v1 is automatically generated. we need to force the creation of a new version if the prefix is anything other than "v"
             if (-not $versionPrefix -eq "v")
             {
