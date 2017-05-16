@@ -20,7 +20,7 @@ function GetSessionToken($body)
         Write-Verbose "Starting authentication method to Apprenda Environment."
         $jsonOutput = Invoke-RestMethod -Uri $global:authURI -Method Post -ContentType "application/json" -Body $body -TimeoutSec 600
         $global:ApprendaSessiontoken = $jsonOutput.apprendaSessionToken
-        Write-Host "The Apprenda session token is: '$global:ApprendaSessiontoken'"
+        #Write-Host "The Apprenda session token is: '$global:ApprendaSessiontoken'"
     }
     catch [System.Exception]
     {
@@ -81,19 +81,66 @@ function UploadVersion($alias, $vAlias, $archive)
     }
 }
 
+function printReportCard($reportCard)
+{
+    foreach ($section in $reportCard.sections)
+    {
+        foreach ($message in $section.messages)
+        {
+            if ($message.severity -ne "Error") 
+            {
+                continue
+            }
+            $msg = ("*** " + $section.title + " ***")
+            $Host.UI.WriteErrorLine($msg)
+            $detailmsg = "      " + $message.severity + ": " + $message.message
+            $Host.UI.WriteErrorLine($detailmsg)
+        }
+    }
+}
+
+function Invoke-WebRpc($uri){
+    $request = [System.Net.WebRequest]::Create($uri)
+    $request.Method = "POST"
+     $request.Headers.Add("ApprendaSessionToken", $global:ApprendaSessiontoken)
+     $request.ContentLength = 0
+     try{
+        $response = $request.GetResponse() | convertfrom-Json
+        $status = $response.StatusCode
+    } catch [System.Management.Automation.MethodInvocationException]{
+        #the WebException is the inner exception here
+        $webException = [System.Net.WebException]$_.Exception.InnerException
+        
+    if ($webException.Response -ne $null){
+         $errorResponse = [System.Net.HttpWebResponse]$webException.Response
+         $status = $errorResponse.StatusCode
+         $stream = $errorResponse.GetResponseStream()
+         $reader = new-object System.IO.StreamReader($stream)
+         $reader.BaseStream.Position = 0;
+        
+         $response = $reader.ReadToEnd()  | convertfrom-json 
+    }
+    }
+
+    return $response
+}
+
+
 function PromoteVersion($alias, $versionAlias, $stage)
 {
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=promote&stage=" + $stage
-    $response = Invoke-WebRequest -Uri $promotionURI -Method POST -ContentType "application/json" -Headers $global:Headers -TimeoutSec 3600 -UseBasicParsing
-        
-    if($($response.StatusCode) -eq 200 )
+    $response = Invoke-WebRpc($promotionURI)
+
+    if($($response.success) -eq $true )
     {
         Write-Host "Application '$alias' has been Promoted to the '$stage' stage." -ForegroundColor Green
+        return 0
     }
     else
     {
         $Host.UI.WriteErrorLine("Error Promoting Application '$alias' to the $stage stage.")
-        $Host.UI.WriteErrorLine($($responseObject.message))     
+        PrintReportCard $response
+        exit 1
     }
 }
 
@@ -109,7 +156,7 @@ function DemoteVersion($alias, $versionAlias)
     }
     else
     {
-        $Host.UI.WriteErrorLine("Error Promoting Application '$alias' to the $stage stage.")
+        $Host.UI.WriteErrorLine("Error Demoting Application '$alias' to the $stage stage.")
         $Host.UI.WriteErrorLine($($responseObject.message))     
     }
 }
@@ -121,7 +168,7 @@ function GetApplications()
     $response = Invoke-WebRequest -Uri $global:appsURI -Method GET -ContentType "application/json" -Headers $global:Headers -Timeoutsec 3600 -UseBasicParsing
     if($($response.StatusCode) -eq 200 )
     {
-        Write-Host $response
+        # Write-Host $response
     }
     return $response | ConvertFrom-Json
 }
@@ -131,7 +178,7 @@ function GetVersions($alias)
     $response = Invoke-WebRequest -Uri "$global:versionsURI/$alias" -Method GET -ContentType "application/json" -Headers $global:Headers -TimeoutSec 3600 -UseBasicParsing
     if($($response.StatusCode) -eq 200 )
     {
-        Write-Host $response
+       # Write-Host $response
     }
     return $response | ConvertFrom-Json
 
@@ -210,3 +257,4 @@ function GetTargetVersion($alias, $versionPrefix, $forceNewVersion)
         Write-Verbose "Global Target Version: $global:targetVersion"
     }
 }
+
