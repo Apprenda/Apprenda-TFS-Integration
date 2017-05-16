@@ -4,7 +4,7 @@
   "friendlyName": "Apprenda - Promote Application",
   "description": "This task promotes your application to the next stage on ACP.",
   "author": "Apprenda",
-  "helpMarkDown": "Replace with markdown to show in help",
+  "helpMarkDown": "This task will promote an application version to its next stage in the [Apprenda Lifecycle Model](http://docs.apprenda.com/6-5/promotion-redesign)",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -14,7 +14,7 @@
   "version": {
     "Major": "1",
     "Minor": "0",
-    "Patch": "1"
+    "Patch": "2"
   },
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "ApprendaPromote $(message)",

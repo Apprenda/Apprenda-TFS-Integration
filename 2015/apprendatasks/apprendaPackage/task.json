@@ -2,9 +2,9 @@
   "id": "0e116640-c212-11e6-8090-953ff2ebe1d5",
   "name": "ApprendaPackage",
   "friendlyName": "Apprenda - Package .NET Application",
-  "description": "This task packages up your application for deployment.",
+  "description": "This task packages an application for deployment to an Apprenda Cloud.",
   "author": "Apprenda",
-  "helpMarkDown": "Replace with markdown to show in help",
+  "helpMarkDown": "This task [packages an application](http://docs.apprenda.com/6-0/creating-app-archives) for deployment to an Apprenda Cloud in the Apprenda documentation.",
   "category": "Utility",
   "visibility": [
     "Build",
@@ -31,7 +31,7 @@
             "type": "filePath",
             "label": "Solution Path",
             "required": true,
-            "helpMarkDown": "The solution file for the solution to package."
+            "helpMarkDown": "The solution file for the task to package."
         },
         {
             "name": "OutputPath",

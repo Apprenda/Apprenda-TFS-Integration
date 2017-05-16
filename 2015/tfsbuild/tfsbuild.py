@@ -5,6 +5,7 @@ import os
 import shutil
 import argparse
 import logging
+import platform
 
 # github issue #12 - we're forcing the change of the path now so relative files should work everywhere
 # except probably mac osx
@@ -29,10 +30,11 @@ def findnth(haystack, needle, n):
 
 
 # update the release version
-def update_release_version(build_type=None, mock=False):
+def update_release_version(build_type=None, mock=False, nobackup=False):
     try:
         # perform backup
-        shutil.copyfile('../vss-extension.json', '../vss-extension.json.bak')
+        if (not nobackup) :
+            shutil.copyfile('../vss-extension.json', '../vss-extension.json.bak')
         # if no type is specified, do nothing
         if build_type is None:
             return
@@ -70,9 +72,9 @@ def deploy_common_updates():
         shutil.copyfile('../common/common.ps1', '../apprendatasks/{0}/common.ps1'.format(destination))
 
 
-def run(build_type, mock=False):
+def run(build_type, mock=False, nobackup=False):
     if build_type != 'rebuild':
-        update_release_version(build_type, mock)
+        update_release_version(build_type, mock, nobackup)
     if not mock:
         deploy_common_updates()
         build_extension()
@@ -82,14 +84,17 @@ def build_extension():
     from subprocess import Popen, PIPE
     # give me the cwd and change it to the parent
     parent = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-    # issue here - windows supports this... uncomment the below line if you are running python on windows
-    # p = Popen(['tfx', 'extension', 'create', '--manifest-blobs', r'..\vss-extension.json', '--output-path', 'bin/'], stdout=PIPE, stderr=PIPE, shell=True, cwd=parent)
-    # uncomment the below line if you are running python on *nix
-    p = Popen(['tfx extension create --manifest-blobs ../vss-extension.json --output-path ./bin/'])
+    if platform.system() == "Windows":
+        process = Popen(['tfx', 'extension', 'create', '--manifest-blobs', \
+            r'..\vss-extension.json', '--output-path', 'bin/'], \
+            stdout=PIPE, stderr=PIPE, shell=True, cwd=parent)
+    else:
+        cmd = 'tfx extension create --manifest-blobs ../vss-extension.json --output-path ./bin/'
+        process = Popen([cmd])
     # don't care as much that they aren't in sync, its fine.
-    for line in p.stdout:
+    for line in process.stdout:
         logger.info(line)
-    for line in p.stderr:
+    for line in process.stderr:
         logger.error(line)
 
 if __name__ == "__main__":
@@ -97,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument('build_type', type=str, choices=['major', 'minor', 'build', 'rebuild'], help='Specify the build type. Values: major | minor | build | rebuild. Rebuild does not increment version.')
     parser.add_argument('--test', dest='runtest', action='store_true', help='Run through the plan, but do not execute.')
     parser.add_argument('-v', dest='verbose', action='store_true', help='set verbosity to DEBUG level')
-    parser.add_argument('-b', dest='nobackup', action='store_true', help='set this to not take a backup of the vss-extension.json file')
+    parser.add_argument('-b', dest='nobackup', action='store_false', help='set this to not take a backup of the vss-extension.json file')
     args = parser.parse_args()
     logger = logging.getLogger('tfsbuild')
     fmt = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -113,4 +118,4 @@ if __name__ == "__main__":
         console.setLevel(logging.INFO)
     logger.debug(args)
     # run it
-    run(args.build_type, mock=args.runtest)
+    run(args.build_type, mock=args.runtest, nobackup=args.nobackup)

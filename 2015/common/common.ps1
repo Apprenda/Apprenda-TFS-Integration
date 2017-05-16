@@ -140,7 +140,7 @@ function PromoteVersion($alias, $versionAlias, $stage)
     {
         $Host.UI.WriteErrorLine("Error Promoting Application '$alias' to the $stage stage.")
         PrintReportCard $response
-        return -1
+        exit 1
     }
 }
 
