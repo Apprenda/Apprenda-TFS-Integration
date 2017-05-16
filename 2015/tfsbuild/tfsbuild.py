@@ -7,6 +7,9 @@ import argparse
 import logging
 import platform
 
+# github issue #7 - define our tasks 
+EXTENSION_TASKS = ['apprendaDemote', 'apprendaDeploy', 'apprendaPromote', 'apprendaScale']
+
 # github issue #12 - we're forcing the change of the path now so relative files should work everywhere
 # except probably mac osx
 FILE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -58,18 +61,39 @@ def update_release_version(build_type=None, mock=False, nobackup=False):
             newversion = "{0}.{1}.{2}".format(major, minor+1, 0)
         if build_type == 'build':
             newversion = "{0}.{1}.{2}".format(major, minor, build+1)
+        logger.debug('New version will be {0}'.format(newversion))
         if mock:
             logger.info('New version will be {0}'.format(newversion))
             return
+        vssext['version'] = newversion
+        update_task_metadata(major, minor, build)
+        with open('../vss-extension.json', 'w') as json_out:
+            json.dump(vssext, json_out, sort_keys=False, indent=2)
+    except:
+        raise
+
+
+def update_task_metadata(major, minor, build):
+    try:
+        for destination in EXTENSION_TASKS:
+            task_json_path = '../apprendatasks/{0}/task.json'.format(destination)
+            with open(task_json_path) as task_json_data:
+                task_metadata = json.load(task_json_data)
+            task_version = task_metadata["version"]
+            task_version["Major"] = major
+            task_version["Minor"] = minor
+            task_version["Patch"] = build
+            with open(task_json_path, 'w') as task_json_data:
+                json.dump(task_metadata, task_json_data, sort_keys=False, indent=2)
     except:
         raise
 
 
 # this copies the common.ps1 function out into the task directories that require it.
 def deploy_common_updates():
-    destinations = ['apprendaDemote', 'apprendaDeploy', 'apprendaPromote', 'apprendaScale']
-    for destination in destinations:
-        shutil.copyfile('../common/common.ps1', '../apprendatasks/{0}/common.ps1'.format(destination))
+    for destination in EXTENSION_TASKS:
+        dest_path = '../apprendatasks/{0}/common.ps1'.format(destination)
+        shutil.copyfile('../common/common.ps1', dest_path)
 
 
 def run(build_type, mock=False, nobackup=False):
