@@ -134,7 +134,7 @@ try {
     else
     {
         Write-Error "Cannot authenticate, error occured during login process."
-        exit -1
+        exit 1
     }
 }
 
