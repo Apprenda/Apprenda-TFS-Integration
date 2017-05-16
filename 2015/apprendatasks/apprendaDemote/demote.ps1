@@ -1,10 +1,6 @@
 param(
-  [string] $pathtozip,
   [string] $alias,
-  [string] $name,
-  [string] $description,
-  [string] $versionPrefix,
-  [string] $stage,
+  [string] $versionalias,
   [string] $cloudurl,
   [string] $clouduser,
   [string] $cloudpw,
@@ -26,7 +22,7 @@ $global:ApprendaSessiontoken = [string]::Empty
 $global:Headers = @{}
 
 try {
-    Write-Verbose "Gathering VSO variables."
+    Write-Verbose "Gathering Task Inputs."
     $alias = Get-VstsInput -Name alias -Require
     $versionalias = Get-VstsInput -Name versionalias -Require
     $cloudurl = Get-VstsInput -Name cloudurl -Require
