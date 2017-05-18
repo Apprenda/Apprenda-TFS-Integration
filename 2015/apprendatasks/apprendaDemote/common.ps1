@@ -83,18 +83,17 @@ function UploadVersion($alias, $vAlias, $archive)
 
 function printReportCard($reportCard)
 {
+	$report = [System.Collections.ArrayList]@()
     foreach ($section in $reportCard.sections)
     {
+		$sectioned = $false
         foreach ($message in $section.messages)
         {
             if ($message.severity -ne "Error") 
             {
                 continue
             }
-            $msg = ("*** " + $section.title + " ***")
-            $Host.UI.WriteErrorLine($msg)
-            $detailmsg = "      " + $message.severity + ": " + $message.message
-            $Host.UI.WriteErrorLine($detailmsg)
+            Write-Error -Message "$($section.title)::$($message.message)"
         }
     }
 }
@@ -138,9 +137,8 @@ function PromoteVersion($alias, $versionAlias, $stage)
     }
     else
     {
-        $Host.UI.WriteErrorLine("Error Promoting Application '$alias' to the $stage stage.")
         PrintReportCard $response
-        exit 1
+        throw "Error Promoting Application '$alias' to the $stage stage."
     }
 }
 

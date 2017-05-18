@@ -15,7 +15,7 @@
       "id": "Microsoft.VisualStudio.Services"
     }
   ], 
-  "version": "1.1.8", 
+  "version": "1.1.20", 
   "contributions": [
     {
       "targets": [
