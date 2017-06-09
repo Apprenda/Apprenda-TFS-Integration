@@ -54,7 +54,7 @@ Once done, create a new Release Task (find the **Deploy Application to Apprenda*
 - **Archive Path** - Use the file chooser to locate your .zip file you created in the build step.
 - **Application Alias** - This is the application alias, the identifier in apprenda. Lower-case alphanumeric, no spaces.
 - **Version Prefix** - This is used to specify what the prefix is for the version. We do this so we can properly increment new versions in a speficied order. (ie. v1, v2, v3, etc.) - default is 'v'.
-- **Target Deployment Stage** - (Values:  Definition | Sandbox | Published ) This tells Apprenda which stage you want the new binaries to be deployed to.
+- **Target Deployment Stage** - (Values:  <span>Definition | Sandbox | Published</span> ) This tells Apprenda which stage you want the new binaries to be deployed to.
 - **Force a New Version** - this will signal Apprenda to always create a new version of this application, when possible. The only time this doesn't apply is if the app is on its first version (it will patch itself).
 
 ### Connection Information
