@@ -1,8 +1,8 @@
-# Apprenda - TFS 2015 Quickstart
+# Apprenda - Visual Studio Team Services or Team Foundation Server 2015 Quickstart
 
 ## Installation
 
-- Grab the latest .VSIX file from the Releases menu. And upload into your TFS platform. After install, the tasks will be available for use.
+The Apprenda Build Tools Extension is available in the Visual Studio Team Services Marketplace.
 
 ## Running Builds
 
