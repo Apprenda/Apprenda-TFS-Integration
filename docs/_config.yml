@@ -1,0 +1,7 @@
+title: Apprenda TFS Integration
+description: Visual Studio Services CI/CD Components to package and deploy for the  Apprenda Cloud Platform
+site:
+  show_downloads: "false"
+sass: 
+  style: compressed
+  
