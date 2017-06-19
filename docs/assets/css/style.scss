@@ -1,0 +1,26 @@
+---
+---
+
+@import "_bootstrap";
+
+#name-and-slogan div {
+    display: inline-block;
+}
+
+#name-and-slogan img {
+    border: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -o-box-shadow: none;
+    -ms-box-shadow: none;
+    margin: 0;
+    padding: 4px 0 4px 0;
+}
+
+#project_title {
+    vertical-align: top;
+}
+
+ol ol { list-style-type: lower-alpha; } 
+ol ol ol { list-style-type: lower-roman; } 
