@@ -11,6 +11,15 @@
       "type": "filePath"
     }, 
     {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "groupName": "AppInfo",
+      "label": "Application Name",
+      "defaultValue": "",
+      "helpMarkDown": "Application display name."
+    },
+    {
       "name": "alias", 
       "defaultValue": "", 
       "required": true, 

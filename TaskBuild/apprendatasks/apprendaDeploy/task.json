@@ -11,6 +11,15 @@
       "type": "filePath"
     }, 
     {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "groupName": "AppInfo",
+      "label": "Application Name",
+      "defaultValue": "",
+      "helpMarkDown": "Application display name."
+    },
+    {
       "name": "alias", 
       "defaultValue": "", 
       "required": true, 
@@ -19,6 +28,15 @@
       "helpMarkDown": "Application alias. Names must not contain spaces and must be unique to the platform.", 
       "type": "string"
     }, 
+    {
+      "name": "versionName",
+      "type": "string",
+      "defaultValue": "",
+      "required": false,
+      "groupName": "AppInfo",
+      "label": "Version Name",
+      "helpMarkDown": "Version display name. May include spaces and other DNS-incompatible characters"
+    },
     {
       "name": "versionPrefix", 
       "defaultValue": "v", 
