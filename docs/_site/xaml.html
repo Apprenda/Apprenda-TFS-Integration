@@ -7,68 +7,97 @@
   <meta name="viewport" content="width=device-width,maximum-scale=2,initial-scale=1">
   <meta name="description" content="Apprenda TFS Integration : Visual Studio Services CI/CD Components to package and deploy for the  Apprenda Cloud Platform">
 
-  <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/style.css?v=dbd2ed3a8b21a7f9f7a3634e16b8fe8f9de2909e">
+  <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/style.css?v=04e74fb97605ab3d12103f32e26118f936bb9208">
+  <link rel="" />
   <title>Apprenda TFS Integration</title>
 </head>
 
 <body>
   <!-- HEADER -->
-  <div id="header_wrap" class="outer">
-    <header class="inner">
-      <div id="name-and-slogan">
-        <div class="apprenda-home">
-          <a href="https://www.apprenda.com"><img src="http://docs.apprenda.com/sites/default/files/apprenda-logo.png" alt="Apprenda"></a>
-        </div>
-        <div id="project_title">
-          <a href="http://github.com/apprenda/Apprenda-TFS-Integration">Apprenda TFS Integration</a>
-        </div>
+  <div id="topbar" class="container-fluid">
+    <div id="name-and-slogan">
+      <div class="apprenda-home">
+        <a href="https://www.apprenda.com"><img src="http://docs.apprenda.com/sites/default/files/apprenda-logo.png" alt="Apprenda"></a>
       </div>
-      <h2 id="project_tagline">Visual Studio Services CI/CD Components to package and deploy for the  Apprenda Cloud Platform</h2>
+      <div id="project_title">
+        <a href="http://github.com/apprenda/Apprenda-TFS-Integration">Apprenda TFS Integration</a>
+      </div>
+    </div>
+    <h3 id="project_tagline">Visual Studio Services CI/CD Components to package and deploy for the  Apprenda Cloud Platform</h3>
 
-      
-      
-    </header>
+     
   </div>
 
   <!-- MAIN CONTENT -->
-  <div id="main_content_wrap" class="outer">
-    <nav class="main-nav">
-      <ul>
-        
-        <li>
-          <a href="/" >
-            Home
-            </a>
-        </li>
-        
-        <li>
-          <a href="/xaml" >
-            Xaml Build
-            </a>
-        </li>
-        
-        <li>
-          <a href="/task" >
-            Task Build
-            </a>
-        </li>
-        
-      </ul>
+  <div id="main_content_wrap" class="container">
+    <div class="row">
+      <div class="col-md-2">
+        <nav>
+        <ul class="list-unstyled">
+          
+          <li>
+            <a href="/" >
+                      Home
+                  </a>
+          </li>
+          
+          <li>
+            <a href="/xaml.html"  class="active" >
+                      Xaml Build
+                  </a>
+          </li>
+          
+          <li>
+            <a href="/task.html" >
+                      Task Build
+                  </a>
+          </li>
+          
+        </ul>
       </nav>
-      <section id="main_content" class="inner">
-        <h1 id="apprenda-tfs-integration">Apprenda-TFS-Integration</h1>
+      </div>
+      <div class="col-md-8">
+        <h1 id="apprenda-xaml-build-steps">Apprenda Xaml Build Steps</h1>
+<h2 id="considerations">Considerations:</h2>
+<ol>
+  <li>The current version of TFS requires you to build a new Build Definition per Application, as the alias for the app is encompassed as a Build Definition Parameter.</li>
+  <li>At the moment, the publish-as credentials are stored in Plain-Text within the Build Definition. This will get updated to use encryption through certs.</li>
+  <li>Apprenda expects a Published version of the app alias to exist in the environment for the TFS workflow to be able to create a new Sandboxed version under.</li>
+</ol>
 
-<p>Contains the files necessary to start the integration of Apprenda with TFS
-Please view this video ahead of time to understand how all the components work together: https://www.youtube.com/watch?v=mQMx9L18nok&amp;list=UUxOozrV-yw676cqdrh4MLoA</p>
+<h2 id="installation-steps">Installation steps</h2>
+<h3 id="acsexe-and-xaml-build-steps">ACS.exe And Xaml Build Steps</h3>
+<ol>
+  <li>Create a branch within your TFS project called apprendatfs</li>
+  <li>Open Visual Studio and Check Out the newly created branch</li>
+  <li>Create a new folder called ApprendaCustomActivities within your project’s branch.
+    <ol>
+      <li>The DLLs from the Xaml Build directory at <a href="https://github.com/apprenda/Apprenda-TFS-Integration/tree/master/2013">GitHub</a></li>
+      <li><code class="highlighter-rouge">ACS.exe</code> from the <a href="https://docs.apprenda.com/downloads">Apprenda SDK</a> for your target Apprenda Cloud Platform</li>
+    </ol>
+  </li>
+  <li>Verify that you can see the changes under Team Explorer in Visual Studio</li>
+  <li>Commit and sync the changes.</li>
+  <li>Publish the branch.</li>
+  <li>Open TFS Team Explorer</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Open Build</td>
+          <td>Manage Build.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ol>
 
-<p>** This integration will work well with TFS 2012 **
-For other versions of TFS, you can use the source code in this repo to build your own Build Activity and XAML build extension to use in your build definition. The source code along with the video above should give you most of the details necessary to get started.</p>
-
-      </section>
+      </div>
+    </div>
   </div>
 
   <!-- FOOTER  -->
-  <div id="footer_wrap" class="outer">
+  <div id="footer_wrap" class="container-fluid">
     <footer class="inner">
       
       <p class="copyright">Apprenda TFS Integration maintained by <a href="http://github.com/apprenda">apprenda</a></p>

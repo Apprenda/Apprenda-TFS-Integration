@@ -8,54 +8,55 @@
   <meta name="description" content="{{ site.title | default: site.github.repository_name }} : {{ site.description | default: site.github.project_tagline }}">
 
   <link rel="stylesheet" type="text/css" media="screen" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  <link rel="" />
   <title>{{ site.title | default: site.github.repository_name }}</title>
 </head>
 
 <body>
   <!-- HEADER -->
-  <div id="header_wrap" class="outer">
-    <header class="inner">
-      <div id="name-and-slogan">
-        <div class="apprenda-home">
-          <a href="https://www.apprenda.com"><img src="http://docs.apprenda.com/sites/default/files/apprenda-logo.png" alt="Apprenda"></a>
-        </div>
-        <div id="project_title">
-          <a href="{{ site.github.repository_url }}">{{ site.title | default: site.github.repository_name }}</a>
-        </div>
+  <div id="topbar" class="container-fluid">
+    <div id="name-and-slogan">
+      <div class="apprenda-home">
+        <a href="https://www.apprenda.com"><img src="http://docs.apprenda.com/sites/default/files/apprenda-logo.png" alt="Apprenda"></a>
       </div>
-      <h2 id="project_tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+      <div id="project_title">
+        <a href="{{ site.github.repository_url }}">{{ site.title | default: site.github.repository_name }}</a>
+      </div>
+    </div>
+    <h3 id="project_tagline">{{ site.description | default: site.github.project_tagline }}</h3>
 
-      {% if site.show_downloads %}
-      <section id="downloads">
-        <a class="zip_download_link" href="{{ site.github.zip_url }}">Download this project as a .zip file</a>
-        <a class="tar_download_link" href="{{ site.github.tar_url }}">Download this project as a tar.gz file</a>
-      </section>
-      {% endif %}
-      {% if site.show_releases %}
-      {% endif %}
-    </header>
+    {% if site.show_downloads %}
+    <section id="downloads">
+      <a class="zip_download_link" href="{{ site.github.zip_url }}">Download this project as a .zip file</a>
+      <a class="tar_download_link" href="{{ site.github.tar_url }}">Download this project as a tar.gz file</a>
+    </section>
+    {% endif %} {% if site.show_releases %} {% endif %}
   </div>
 
   <!-- MAIN CONTENT -->
-  <div id="main_content_wrap" class="outer">
-    <nav class="main-nav">
-      <ul>
-        {% for item in site.data.navigation %}
-        <li>
-          <a href="{{ item.link }}" {% if item.link==page.url %} class="active" {% endif %}>
-            {{ item.name }}
-            </a>
-        </li>
-        {% endfor %}
-      </ul>
+  <div id="main_content_wrap" class="container">
+    <div class="row">
+      <div class="col-md-2">
+        <nav>
+        <ul class="list-unstyled">
+          {% for item in site.data.navigation %}
+          <li>
+            <a href="{{ item.link }}" {% if item.link==page.url %} class="active" {% endif %}>
+                      {{ item.name }}
+                  </a>
+          </li>
+          {% endfor %}
+        </ul>
       </nav>
-      <section id="main_content" class="inner">
-        {{ content }}
-      </section>
+      </div>
+      <div class="col-md-9">
+        {{content}}
+      </div>
+    </div>
   </div>
 
   <!-- FOOTER  -->
-  <div id="footer_wrap" class="outer">
+  <div id="footer_wrap" class="container-fluid">
     <footer class="inner">
       {% if site.github.is_project_page %}
       <p class="copyright">{{ site.title | default: site.github.repository_name }} maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>

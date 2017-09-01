@@ -3,8 +3,39 @@
 
 @import "_bootstrap";
 
-#name-and-slogan div {
-    display: inline-block;
+body{
+    padding-top: 12rem;
+    padding-bottom: 8rem;
+}
+#topbar{
+    position: absolute;
+    top:0px;
+    left:0px;
+    right: 0px;
+    width:100%;
+    background: rgba(35, 138, 208, 1);
+    color: white;    
+
+}
+header.inner {
+    width: auto;
+}
+
+nav ul li {
+    list-style: none;
+}
+// nav {
+//     background: rgba(35,138,208,1);
+//     color: white;
+// }
+nav a{
+    // color: white;
+}
+nav a.active{
+    font-weight: bold;
+}
+#name-and-slogan a{
+    color: white;
 }
 
 #name-and-slogan img {
@@ -16,11 +47,33 @@
     -ms-box-shadow: none;
     margin: 0;
     padding: 4px 0 4px 0;
+    width: auto;
 }
 
 #project_title {
     vertical-align: top;
+    font-size: 3em;
+    padding-left: 15px;
+    width: auto;
 }
 
 ol ol { list-style-type: lower-alpha; } 
 ol ol ol { list-style-type: lower-roman; } 
+
+.apprenda-home{
+    width: 45px;
+    height: 40px;
+    padding: 0 5px 0 5px;
+}
+#name-and-slogan div,
+.apprenda-home div {
+    display: inline-block;
+}
+
+#name-and-slogan {
+    padding-left: 200px;
+}
+
+#project_tagline{
+    padding-left: 230px;
+}

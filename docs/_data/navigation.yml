@@ -1,7 +1,7 @@
 - link: /
   name: Home
-- link: /xaml
+- link: /xaml.html
   name: Xaml Build
-- link: /task
+- link: /task.html
   name: Task Build
   

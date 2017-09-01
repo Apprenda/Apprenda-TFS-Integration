@@ -1,8 +1,18 @@
-Apprenda-TFS-Integration
-========================
+# Apprenda Xaml Build Steps
+## Considerations:
+1. The current version of TFS requires you to build a new Build Definition per Application, as the alias for the app is encompassed as a Build Definition Parameter.
+1. At the moment, the publish-as credentials are stored in Plain-Text within the Build Definition. This will get updated to use encryption through certs.
+1. Apprenda expects a Published version of the app alias to exist in the environment for the TFS workflow to be able to create a new Sandboxed version under.
 
-Contains the files necessary to start the integration of Apprenda with TFS
-Please view this video ahead of time to understand how all the components work together: https://www.youtube.com/watch?v=mQMx9L18nok&list=UUxOozrV-yw676cqdrh4MLoA 
-
-** This integration will work well with TFS 2012 **
-For other versions of TFS, you can use the source code in this repo to build your own Build Activity and XAML build extension to use in your build definition. The source code along with the video above should give you most of the details necessary to get started.
+## Installation steps
+### ACS.exe And Xaml Build Steps
+1. Create a branch within your TFS project called apprendatfs
+1. Open Visual Studio and Check Out the newly created branch
+1. Create a new folder called ApprendaCustomActivities within your project's branch.
+    1. The DLLs from the Xaml Build directory at [GitHub](https://github.com/apprenda/Apprenda-TFS-Integration/tree/master/2013)
+    1. `ACS.exe` from the [Apprenda SDK](https://docs.apprenda.com/downloads) for your target Apprenda Cloud Platform
+1. Verify that you can see the changes under Team Explorer in Visual Studio
+1. Commit and sync the changes.
+1. Publish the branch.
+1. Open TFS Team Explorer
+1. Open Build | Manage Build.
