@@ -4,6 +4,7 @@ param(
   [string] $name,
   [string] $description,
   [string] $versionPrefix,
+  [string] $versionName,
   [string] $stage,
   [string] $cloudurl,
   [string] $clouduser,
@@ -36,12 +37,14 @@ try {
         $name = $alias
     }
     $versionPrefix = Get-VstsInput -Name versionPrefix -Require
+    $versionName = Get-VstsInput -Name versionName 
     $stage = Get-VstsInput -Name stage -Require
     $cloudurl = Get-VstsInput -Name cloudurl -Require
     $clouduser = Get-VstsInput -Name clouduser -Require
     $cloudpw = Get-VstsInput -Name cloudpw -Require
     $clouddevteam = Get-VstsInput -Name clouddevteam -Require
     $forcenewversion = Get-VstsInput -Name forcenewversion -Require
+    $retainScalingSettings = Get-VstsInput -Name retainScalingSettings
 
     Write-Verbose "****************************************************"
     Write-Verbose "*         Input Check                               "
@@ -49,11 +52,13 @@ try {
     Write-Verbose "* alias= $alias"
     Write-Verbose "* name= $name"
     Write-Verbose "* versionPrefix= $versionPrefix"
+    Write-Verbose "* versionName = $versionName"
     Write-Verbose "* stage= $stage"
     Write-Verbose "* cloudurl= $cloudurl"
     Write-Verbose "* clouduser= $clouduser"
     Write-Verbose "* cloudpw= $cloudpw"
     Write-Verbose "* clouddevteam= $clouddevteam"
+    Write-Verbose "* retainScalingSettings= $retainScalingSettings"
     Write-Verbose "****************************************************"
     Write-Verbose "Starting deployment to Apprenda environment: $cloudurl"
     Write-Verbose "Validating archive file."
@@ -106,19 +111,14 @@ try {
         {
             Write-Host "Application does not exist, creating $alias."
             CreateNewApplication $alias $name ""
-            # when an application is created, v1 is automatically generated. we need to force the creation of a new version if the prefix is anything other than "v"
-            if (-not $versionPrefix -eq "v")
-            {
-                CreateNewVersion $alias $versionPrefix+"1"
-            }
-            $global:targetVersion = $versionPrefix + "1"
-            $response = UploadVersion $alias $global:targetVersion $fullpath
+            # when an application is created, v1 is automatically generated. If v1 is not published, we cannot create a new version based on it.
+            $response = UploadVersion $alias "v1" $fullpath 
         }
         else
         # Use Case - Application does exist, figure out what version we require to patch, creating the new version if necessary
         {
             Write-Host "Application exists, running version checker."
-            GetTargetVersion $alias $versionPrefix $forcenewversion
+            GetTargetVersion $alias $versionPrefix $forcenewversion $versionName
             if($global:DemoteFirst)
             {
                 DemoteVersion $alias $global:targetVersion
@@ -128,7 +128,7 @@ try {
         # Lastly, promote to the target stage
         if($stage -eq "Sandbox" -or $stage -eq "Published")
         {
-            PromoteVersion $alias $global:targetVersion $stage
+            PromoteVersion $alias $global:targetVersion $stage $retainScalingSettings
         }
     }
     else

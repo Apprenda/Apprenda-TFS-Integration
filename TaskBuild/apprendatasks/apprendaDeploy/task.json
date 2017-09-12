@@ -29,6 +29,14 @@
       "helpMarkDown": "Version display name. May include spaces and other DNS-incompatible characters"
     },
     {
+      "name": "retainScalingSettings",
+      "type": "boolean",
+      "label": "Retain Instance Count",
+      "defaultValue": false,
+      "helpMarkDown": "Check this if you want to keep the published instance's scaling definition instead of the Platform Default",
+      "groupName": "AppInfo"
+  },
+    {
       "name": "versionPrefix", 
       "defaultValue": "v", 
       "required": false, 

@@ -35,6 +35,8 @@ try {
     $cloudpw = Get-VstsInput -Name cloudpw -Require
     $clouddevteam = Get-VstsInput -Name clouddevteam -Require
     $forcenewversion = Get-VstsInput -Name forcenewversion -Require
+    $retainScalingSettings = Get-VstsInput -Name retainScalingSettings
+
     Write-Verbose "****************************************************"
     Write-Verbose "*         Input Check                               "
     Write-Verbose "* versionAlias = $versionalias"
@@ -43,6 +45,7 @@ try {
     Write-Verbose "* clouduser= $clouduser"
     Write-Verbose "* cloudpw= $cloudpw"
     Write-Verbose "* clouddevteam= $clouddevteam"
+    Write-Verbose "* retainScalingSettings = $retainScalingSettings"
     Write-Verbose "****************************************************"
 
     # Sanitize URLs and Authenticate
@@ -62,17 +65,15 @@ try {
         $global:Headers["ApprendaSessionToken"] = $global:ApprendaSessiontoken
         $apps = GetApplications
         
-        # because we want to give a good experience, we're going to check to make sure
-        # we can actually do the demotion first.
         $appexists = $false
         $versionexists = $false
-        $isInSandbox = $false
+        $notInPublished = $true
 
         foreach ($app in $apps)
         {
             if ($app.alias -eq $alias)
             {
-                Write-Host "Application exists, chceking target version alias."
+                Write-Host "Application exists, checking  target version alias."
                 $appexists = $true
                 break
             }
@@ -85,34 +86,34 @@ try {
                 if($version.alias -eq $versionalias)
                 {
                     $versionexists = $true
-                    Write-Host "Located version alias, checking Stage to make sure it is in Sandbox."
-                    if($version.stage -eq "Sandbox")
+                    Write-Host "Located version alias, checking Stage to make sure it is not published."
+                    if(($version.stage -eq "Sandbox") -or ($version.stage -eq "Definition"))
                     {
-                        Write-Host "Requested application and version are in Sandbox stage."
-                        $isSandbox = $true
+                        Write-Host "Requested application and version are not published."
                     }
                     else
                     {
-                        Write-Error "The requested application and version are unable to be demoted because they are not in Sandbox stage."
+                        Write-Error "The requested application and version are unable to be promoted because they are already in the Published stage."
+                        $notInPublished = $false
                     }
                     break
                 }
             }
-            if($versionexists -and $isSandbox)
+            if($versionexists -and $notInPublished)
             {
-                Write-Verbose "Starting demotion of app $alias at version $versionalias."
-                DemoteVersion $alias $versionalias
-                Write-Host "Successfully demoted app $alias at version $versionalias."
+                Write-Verbose "Starting promotion of app $alias at version $versionalias."
+                PromoteVersion $alias $versionalias $retainScalingSettings
+                Write-Host "Successfully promoted app $alias at version $versionalias."
             }
             else
             {
-                Write-Error "We found the application, but it did not meet the criteria for demotion. Please check your application metadata."
+                Write-Error "We found the application, but it did not meet the criteria for promotion. Please check your application metadata."
                 exit 1
             }
         }
         else
         {
-            Write-Error "The requested application for demotion does not exist under this current developer team."
+            Write-Error "The requested application for promotion does not exist under this current developer team."
             exit 1
         }
     }

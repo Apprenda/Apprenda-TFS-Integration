@@ -47,14 +47,14 @@ function CreateNewApplication($alias, $name, $description)
     }     
 }
 
-function CreateNewVersion($alias)
+function CreateNewVersion($appAlias, $versionAlias, $versionName)
 {
     try
     {
-        $versionBody = "{`"Name`":`"$($global:targetVersion)`",`"Alias`":`"$($global:targetVersion)`",`"Description`":`"`"}"
-        $uri = $global:versionsURI + '/' + $alias
+        $versionBody = "{`"Name`":`"$($versionName)`",`"Alias`":`"$($global:targetVersion)`",`"Description`":`"$($versionName)`"}"
+        $uri = $global:versionsURI + '/' + $appAlias
         Invoke-WebRequest -Uri $uri -Method POST -ContentType "application/json" -Headers $global:Headers -Body $versionBody -TimeoutSec 1200 -UseBasicParsing
-        Write-Host "   Created Version '$($global:targetVersion)' for '$($alias)'."
+        Write-Host "   Created Version '$($versionName)' with alias '$($global:targetVersion)' for '$($appAlias)'."
     }
     catch [System.Exception]
     {
@@ -125,9 +125,14 @@ function Invoke-WebRpc($uri){
 }
 
 
-function PromoteVersion($alias, $versionAlias, $stage)
+function PromoteVersion($alias, $versionAlias, $stage, $retainScalingSettings)
 {
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=promote&stage=" + $stage
+    if ($retainScalingSettings -eq $true){
+        $promotionUri = $promotionUri + "&useScalingSettingsFrom=Published"
+        Write-Host "Using Scaling etings from Published Version"
+    }
+
     $response = Invoke-WebRpc($promotionURI)
 
     if($($response.success) -eq $true )
@@ -195,6 +200,17 @@ function GetVersions($alias)
 function GetTargetVersion($alias, $versionPrefix, $forceNewVersion)
 {
     $versions = GetVersions($alias)
+    if ($versions.length -eq 1)
+    {
+        # There is only one version...
+        if ($versions[0].stage -neq "Published") 
+        {
+            # and we are in Definition or Sandbox. 
+            $global:targetVersion = "v1";
+            return;
+        }
+    }
+
     $matchingVersions = New-Object System.Collections.ArrayList
     # Step One - find all versions matching the prefix
     $pattern = "$versionPrefix[0-9]*"
@@ -230,7 +246,7 @@ function GetTargetVersion($alias, $versionPrefix, $forceNewVersion)
             Write-Verbose "After iteration, highest version is : $highestversionCount with stage: $highestVersionStage"
         }
         # 1.10.17 - version 0.0.18
-        # as a safeguard - we may have a version with a new prefix while other versions exist. so if we are still zero, use v1
+        # as a safeguard - we may have a version with a new prefix while other versions exist. so if we are still zero, use (versionPrefix)1
         if ($highestVersionCount -eq 0)
         {
             $highestVersionCount = 1
