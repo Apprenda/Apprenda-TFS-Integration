@@ -15,57 +15,57 @@
       "id": "Microsoft.VisualStudio.Services"
     }
   ], 
-  "version": "1.1.20", 
+  "version": "1.1.22", 
   "contributions": [
     {
-      "targets": [
-        "ms.vss-distributed-task.tasks"
-      ], 
-      "type": "ms.vss-distributed-task.task", 
       "id": "apprendaDemote", 
+      "type": "ms.vss-distributed-task.task", 
       "properties": {
         "name": "apprendatasks/apprendaDemote"
-      }
-    }, 
-    {
+      }, 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ], 
-      "type": "ms.vss-distributed-task.task", 
+      ]
+    }, 
+    {
       "id": "apprendaDeploy", 
+      "type": "ms.vss-distributed-task.task", 
       "properties": {
         "name": "apprendatasks/apprendaDeploy"
-      }
-    }, 
-    {
+      }, 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ], 
-      "type": "ms.vss-distributed-task.task", 
+      ]
+    }, 
+    {
       "id": "apprendaPackage", 
+      "type": "ms.vss-distributed-task.task", 
       "properties": {
         "name": "apprendatasks/apprendaPackage"
-      }
-    }, 
-    {
+      }, 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ], 
-      "type": "ms.vss-distributed-task.task", 
+      ]
+    }, 
+    {
       "id": "apprendaPromote", 
+      "type": "ms.vss-distributed-task.task", 
       "properties": {
         "name": "apprendatasks/apprendaPromote"
-      }
-    }, 
-    {
+      }, 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ], 
-      "type": "ms.vss-distributed-task.task", 
+      ]
+    }, 
+    {
       "id": "apprendaScale", 
+      "type": "ms.vss-distributed-task.task", 
       "properties": {
         "name": "apprendatasks/apprendaScale"
-      }
+      }, 
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ]
     }
   ], 
   "id": "apprendatasks", 

@@ -1,5 +1,5 @@
 {
-  "category": "Utility", 
+  "category": "Deploy", 
   "inputs": [
     {
       "name": "pathtozip", 
@@ -20,22 +20,22 @@
       "type": "string"
     }, 
     {
-      "name": "versionName",
-      "type": "string",
-      "defaultValue": "",
-      "required": false,
-      "groupName": "AppInfo",
-      "label": "Version Name",
-      "helpMarkDown": "Version display name. May include spaces and other DNS-incompatible characters"
-    },
+      "name": "versionName", 
+      "defaultValue": "", 
+      "required": false, 
+      "label": "Version Name", 
+      "groupName": "AppInfo", 
+      "helpMarkDown": "Version display name. May include spaces and other DNS-incompatible characters", 
+      "type": "string"
+    }, 
     {
-      "name": "retainScalingSettings",
-      "type": "boolean",
-      "label": "Retain Instance Count",
-      "defaultValue": false,
-      "helpMarkDown": "Check this if you want to keep the published instance's scaling definition instead of the Platform Default",
-      "groupName": "AppInfo"
-  },
+      "name": "retainScalingSettings", 
+      "defaultValue": false, 
+      "label": "Retain Instance Count", 
+      "groupName": "AppInfo", 
+      "helpMarkDown": "Check this if you want to keep the published instance's scaling definition instead of the Platform Default", 
+      "type": "boolean"
+    }, 
     {
       "name": "versionPrefix", 
       "defaultValue": "v", 
@@ -107,11 +107,11 @@
     "Build", 
     "Release"
   ], 
-  "id": "fb765e50-c211-11e6-9471-0d5c99017b97", 
+  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance", 
   "version": {
     "Major": 1, 
     "Minor": 1, 
-    "Patch": 19
+    "Patch": 21
   }, 
   "groups": [
     {
@@ -131,7 +131,7 @@
       "target": "deploy.ps1"
     }
   }, 
-  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance", 
+  "id": "fb765e50-c211-11e6-9471-0d5c99017b97", 
   "minimumAgentVersion": "1.95.0", 
   "name": "ApprendaDeploy"
 }

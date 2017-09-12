@@ -5,7 +5,7 @@
   "description": "This task packages an application for deployment to an Apprenda Cloud.",
   "author": "Apprenda",
   "helpMarkDown": "This task [packages an application](http://docs.apprenda.com/6-0/creating-app-archives) for deployment to an Apprenda Cloud in the Apprenda documentation.",
-  "category": "Utility",
+  "category": "Package",
   "visibility": [
     "Build",
     "Release"

@@ -1,5 +1,5 @@
 {
-  "category": "Utility", 
+  "category": "Deploy", 
   "inputs": [
     {
       "name": "pathtozip", 
@@ -82,11 +82,11 @@
     "Build", 
     "Release"
   ], 
-  "id": "28eb7be0-c212-11e6-9c6f-252c537978de", 
+  "helpMarkDown": "This task sets the [desired instance counts](http://docs.apprenda.com/6-0/scaling) for your Application Version", 
   "version": {
     "Major": 1, 
     "Minor": 1, 
-    "Patch": 19
+    "Patch": 21
   }, 
   "groups": [
     {
@@ -106,7 +106,7 @@
       "target": "scale.ps1"
     }
   }, 
-  "helpMarkDown": "This task sets the [desired instance counts](http://docs.apprenda.com/6-0/scaling) for your Application Version", 
+  "id": "28eb7be0-c212-11e6-9c6f-252c537978de", 
   "minimumAgentVersion": "1.95.0", 
   "name": "ApprendaScale"
 }
