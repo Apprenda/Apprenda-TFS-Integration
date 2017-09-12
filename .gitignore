@@ -2,6 +2,7 @@
 
 # added some custom stuff here
 2015/bin/
+TaskBuild/bin/
 
 ### Windows template
 # Windows image file caches
@@ -389,3 +390,5 @@ ENV/
 .ropeproject
 
 docs/_site/
+
+**/*.bak
