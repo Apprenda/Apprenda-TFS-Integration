@@ -47,7 +47,7 @@
             "label": "Build First Before Packaging",
             "defaultValue": "False",
             "required": true,
-            "helpMarkdown": "Check this to enable building the solution first before packaging it.",
+            "helpMarkdown": "Check this to enable building the solution first before packaging it (usually required for WCF Service projects).",
             "group": "advanced"
         },
         {
