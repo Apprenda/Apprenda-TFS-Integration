@@ -165,7 +165,20 @@ function DemoteVersion($alias, $versionAlias)
 }
 
 
-
+function EnableTrustAllCerts{
+    add-type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+}
 function GetApplications()
 {
     $response = Invoke-WebRequest -Uri $global:appsURI -Method GET -ContentType "application/json" -Headers $global:Headers -Timeoutsec 3600 -UseBasicParsing
@@ -203,7 +216,7 @@ function GetTargetVersion($alias, $versionPrefix, $forceNewVersion)
     if ($versions.length -eq 1)
     {
         # There is only one version...
-        if ($versions[0].stage -neq "Published") 
+        if ($versions[0].stage -ne "Published") 
         {
             # and we are in Definition or Sandbox. 
             $global:targetVersion = "v1";

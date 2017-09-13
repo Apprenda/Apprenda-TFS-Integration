@@ -27,6 +27,7 @@ $global:ApprendaSessiontoken = [string]::Empty
 $global:Headers = @{}
 $global:TargetVersion=""
 $global:DemoteFirst=$false
+$ignoreCertificateValidation = $false
 
 try {
     Write-Verbose "Gathering VSO variables."
@@ -45,7 +46,7 @@ try {
     $clouddevteam = Get-VstsInput -Name clouddevteam -Require
     $forcenewversion = Get-VstsInput -Name forcenewversion -Require
     $retainScalingSettings = Get-VstsInput -Name retainScalingSettings
-
+    $ignoreCertificateValidation = Get-VstsInput -Name ignoreCertificateValidation
     Write-Verbose "****************************************************"
     Write-Verbose "*         Input Check                               "
     Write-Verbose "* pathtozip= $pathtozip"
@@ -59,7 +60,15 @@ try {
     Write-Verbose "* cloudpw= $cloudpw"
     Write-Verbose "* clouddevteam= $clouddevteam"
     Write-Verbose "* retainScalingSettings= $retainScalingSettings"
+    Write-Verbose "* ignoreCertificateValidation= $ignoreCertificateValidation"
     Write-Verbose "****************************************************"
+
+if ($ignoreCertificateValidation){
+    Write-Verbose "Disabling HTTPS certificate validation"
+    EnableTrustAllCerts
+}
+
+
     Write-Verbose "Starting deployment to Apprenda environment: $cloudurl"
     Write-Verbose "Validating archive file."
 

@@ -64,6 +64,15 @@
       "type": "string"
     }, 
     {
+      "name": "ignoreCertificateValidation",
+      "defaultValue": false,
+      "required": false,
+      "label": "Ignore Certificate Validation Errors",
+      "groupName": "ConnInfo",
+      "helpMarkDown": "Check this if certificate validation errors should be ignored, for example if your Apprenda Cloud Platform instance uses a self-signed certificate.",
+      "type": "boolean"
+    },
+    {
       "name": "clouduser", 
       "defaultValue": "$(apprendauser)", 
       "required": true, 
@@ -93,18 +102,7 @@
   ], 
   "instanceNameFormat": "ApprendaPromote $(message)", 
   "description": "This task promotes your application to the next stage on ACP.", 
-  "author": "Apprenda", 
   "demands": [], 
-  "visibility": [
-    "Build", 
-    "Release"
-  ], 
-  "helpMarkDown": "This task will promote an application version to its next stage in the [Apprenda Lifecycle Model](http://docs.apprenda.com/6-5/promotion-redesign)", 
-  "version": {
-    "Major": 1, 
-    "Minor": 1, 
-    "Patch": 21
-  }, 
   "groups": [
     {
       "isExpanded": true, 
@@ -117,6 +115,17 @@
       "name": "ConnInfo"
     }
   ], 
+  "author": "Apprenda", 
+  "visibility": [
+    "Build", 
+    "Release"
+  ], 
+  "version": {
+    "Major": 1, 
+    "Minor": 1, 
+    "Patch": 23
+  }, 
+  "helpMarkDown": "This task will promote an application version to its next stage in the [Apprenda Lifecycle Model](http://docs.apprenda.com/6-5/promotion-redesign)", 
   "friendlyName": "Apprenda - Promote Application", 
   "execution": {
     "PowerShell3": {

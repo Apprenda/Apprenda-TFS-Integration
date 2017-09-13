@@ -203,7 +203,7 @@ function GetTargetVersion($alias, $versionPrefix, $forceNewVersion)
     if ($versions.length -eq 1)
     {
         # There is only one version...
-        if ($versions[0].stage -neq "Published") 
+        if ($versions[0].stage -ne "Published") 
         {
             # and we are in Definition or Sandbox. 
             $global:targetVersion = "v1";

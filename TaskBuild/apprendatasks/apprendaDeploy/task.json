@@ -64,6 +64,15 @@
       "type": "string"
     }, 
     {
+      "name": "ignoreCertificateValidation",
+      "defaultValue": false,
+      "required": false,
+      "label": "Ignore Certificate Validation Errors",
+      "groupName": "ConnInfo",
+      "helpMarkDown": "Check this if certificate validation errors should be ignored, for example if your Apprenda Cloud Platform instance uses a self-signed certificate.",
+      "type": "boolean"
+    },
+    {
       "name": "clouduser", 
       "defaultValue": "$(apprendauser)", 
       "required": true, 
@@ -101,18 +110,7 @@
   ], 
   "instanceNameFormat": "ApprendaDeploy $(message)", 
   "description": "This task deploys your application onto ACP", 
-  "author": "Apprenda", 
   "demands": [], 
-  "visibility": [
-    "Build", 
-    "Release"
-  ], 
-  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance", 
-  "version": {
-    "Major": 1, 
-    "Minor": 1, 
-    "Patch": 21
-  }, 
   "groups": [
     {
       "isExpanded": true, 
@@ -125,6 +123,17 @@
       "name": "ConnInfo"
     }
   ], 
+  "author": "Apprenda", 
+  "visibility": [
+    "Build", 
+    "Release"
+  ], 
+  "version": {
+    "Major": 1, 
+    "Minor": 1, 
+    "Patch": 23
+  }, 
+  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance", 
   "friendlyName": "Apprenda - Deploy Application", 
   "execution": {
     "PowerShell3": {

@@ -24,6 +24,7 @@ $global:ApprendaSessiontoken = [string]::Empty
 $global:Headers = @{}
 $global:TargetVersion=""
 $global:DemoteFirst=$false
+ignoreCertificateValidation = $false
 
 try {
     Write-Verbose "Gathering VSO variables."
@@ -39,6 +40,8 @@ try {
     $cloudpw = Get-VstsInput -Name cloudpw -Require
     $clouddevteam = Get-VstsInput -Name clouddevteam -Require
     $forcenewversion = Get-VstsInput -Name forcenewversion -Require
+    $ignoreCertificateValidation = Get-VsTsInput -name ignoreCertificateValidation
+
     Write-Verbose "****************************************************"
     Write-Verbose "*         Input Check                               "
     Write-Verbose "* versionAlias = $versionalias"
@@ -48,7 +51,9 @@ try {
     Write-Verbose "* cloudpw= $cloudpw"
     Write-Verbose "* clouddevteam= $clouddevteam"
     Write-Verbose "* stage= $stage"
+    Write-Verbose "* ignoreCertificateValidation = $ignoreCertificateValidation"
     Write-Verbose "****************************************************"
+
 
     # Sanitize URLs and Authenticate
     FormatURL $AppsEndpointURI $cloudurl ([ref]$global:appsURI)
@@ -58,6 +63,11 @@ try {
     FormatURL $AuthenticationEndpointURI $cloudurl ([ref]$global:authURI)
     Write-Verbose "global:authuri: $global:authURI"
     $devAuthJSON = FormatAuthBody $clouduser $cloudpw $clouddevteam
+    
+    if ($ignoreCertificateValidation){
+    Write-Verbose "Disabling HTTPS certificate validation"
+    EnableTrustAllCerts
+}
     Write-Verbose "devAuthJson: $devAuthJSON"
     GetSessionToken $devAuthJSON
 

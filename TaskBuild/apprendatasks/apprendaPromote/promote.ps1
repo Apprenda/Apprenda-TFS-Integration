@@ -24,6 +24,7 @@ $global:versionsURI = [string]::Empty
 $global:authURI = [string]::Empty
 $global:ApprendaSessiontoken = [string]::Empty
 $global:Headers = @{}
+$ignoreCertificateValidation = $false
 
 try {
     Write-Verbose "Gathering VSO variables."
@@ -36,6 +37,7 @@ try {
     $clouddevteam = Get-VstsInput -Name clouddevteam -Require
     $forcenewversion = Get-VstsInput -Name forcenewversion -Require
     $retainScalingSettings = Get-VstsInput -Name retainScalingSettings
+    $ignoreCertificateValidation = Get-VsTsInput -name ignoreCertificateValidation
 
     Write-Verbose "****************************************************"
     Write-Verbose "*         Input Check                               "
@@ -45,8 +47,13 @@ try {
     Write-Verbose "* clouduser= $clouduser"
     Write-Verbose "* cloudpw= $cloudpw"
     Write-Verbose "* clouddevteam= $clouddevteam"
+    Write-Verbose "* ignoreCertificateValidation= $ignoreCertificateValidation"
     Write-Verbose "* retainScalingSettings = $retainScalingSettings"
     Write-Verbose "****************************************************"
+if ($ignoreCertificateValidation){
+    Write-Verbose "Disabling HTTPS certificate validation"
+    EnableTrustAllCerts
+}
 
     # Sanitize URLs and Authenticate
     FormatURL $AppsEndpointURI $cloudurl ([ref]$global:appsURI)
