@@ -11,13 +11,14 @@ param(
   [string] $cloudpw,
   [string] $clouddevteam
 )
-
 Trace-VstsEnteringInvocation $MyInvocation Verbose
 
 # Dot Source the Common Functions Used across all tasks.
 . "$PSScriptRoot\common.ps1"
+. "$PSScriptRoot\GetTargetVersion.ps1"
+
 #Constants 
-$AuthenticationEndpointURI = "/authentication/api/v1/sessions/developer/"
+$AuthenticationEndpointURI = "/authentication/api/v1/sessions/developer"
 $AppsEndpointURI = '/developer/api/v1/apps'
 $VersionsEndpointURI = '/developer/api/v1/versions'
 $global:appsURI = [string]::Empty
@@ -25,7 +26,6 @@ $global:versionsURI = [string]::Empty
 $global:authURI = [string]::Empty
 $global:ApprendaSessiontoken = [string]::Empty
 $global:Headers = @{}
-$global:TargetVersion=""
 $global:DemoteFirst=$false
 $ignoreCertificateValidation = $false
 
@@ -64,12 +64,12 @@ try {
     Write-Verbose "****************************************************"
 
 if ($ignoreCertificateValidation){
-    Write-Verbose "Disabling HTTPS certificate validation"
+    Write-Host "Disabling HTTPS certificate validation"
     EnableTrustAllCerts
 }
 
 
-    Write-Verbose "Starting deployment to Apprenda environment: $cloudurl"
+    Write-Host "Starting deployment to Apprenda environment: $cloudurl"
     Write-Verbose "Validating archive file."
 
     # Test to make sure zip file is available.
@@ -96,13 +96,22 @@ if ($ignoreCertificateValidation){
     FormatURL $AuthenticationEndpointURI $cloudurl ([ref]$global:authURI)
     Write-Verbose "global:authuri: $global:authURI"
     $devAuthJSON = FormatAuthBody $clouduser $cloudpw $clouddevteam
-    Write-Verbose "devAuthJson: $devAuthJSON"
     GetSessionToken $devAuthJSON
 
+    $targetVersion = new-object -typename psobject -Property @{
+        Alias = "v1"
+        createVersion = $false
+        demoteThenPromote = $false
+        CurrentState = "Definition"
+    }
 
     if (-Not ([string]::IsNullOrEmpty($global:ApprendaSessiontoken)))
     {
         $global:Headers["ApprendaSessionToken"] = $global:ApprendaSessiontoken
+        $appexists = $false
+        $apps = GetApplications
+
+        write-verbose (convertto-json $apps)
         $appexists = $false
         $apps = GetApplications
         foreach ($app in $apps)
@@ -114,12 +123,12 @@ if ($ignoreCertificateValidation){
                 break
             }
         }
-        $targetVersion = ""
+        
         # Use Case - the application doesn't exist, create it.
         if(-not $appexists)
         {
             Write-Host "Application does not exist, creating $alias."
-            CreateNewApplication $alias $name ""
+            CreateNewApplication $alias $name $description
             # when an application is created, v1 is automatically generated. If v1 is not published, we cannot create a new version based on it.
             $response = UploadVersion $alias "v1" $fullpath 
         }
@@ -127,17 +136,28 @@ if ($ignoreCertificateValidation){
         # Use Case - Application does exist, figure out what version we require to patch, creating the new version if necessary
         {
             Write-Host "Application exists, running version checker."
-            GetTargetVersion $alias $versionPrefix $forcenewversion $versionName
-            if($global:DemoteFirst)
+            $versions = GetVersions($alias)
+            $targetVersion = GetTargetVersion $versions $alias $versionPrefix $forcenewversion $versionName
+            write-verbose "TargetVersion: $(convertto-json $targetVersion)"
+            
+
+            if($targetVersion.demoteThenPromote)
             {
-                DemoteVersion $alias $global:targetVersion
+                write-verbose "Demoting sandbox version $($targetVersion.alias) to allow patching."
+                DemoteVersion $alias $targetVersion.alias
             }
-            $response = UploadVersion $alias $global:targetVersion $fullpath
+            if ($targetVersion.createVersion)
+            {
+                Write-verbose "Creating new version $($targetVersion.alias) for application $alias"
+                CreateNewVersion $alias $targetVersion.alias $versionName
+            }
+            $response = UploadVersion $alias $targetVersion.alias $fullpath
         }
+
         # Lastly, promote to the target stage
         if($stage -eq "Sandbox" -or $stage -eq "Published")
         {
-            PromoteVersion $alias $global:targetVersion $stage $retainScalingSettings
+            PromoteVersion $alias ($targetVersion.alias) $stage $retainScalingSettings
         }
     }
     else
@@ -148,5 +168,8 @@ if ($ignoreCertificateValidation){
 }
 
 finally {
+    set-vststaskvariable -Name NewVersion -Value $targetVersion.alias
     Trace-VstsLeavingInvocation $MyInvocation
 }
+
+

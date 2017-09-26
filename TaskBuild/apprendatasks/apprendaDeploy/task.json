@@ -11,12 +11,30 @@
       "type": "filePath"
     }, 
     {
-      "name": "alias", 
+      "name": "name", 
       "defaultValue": "", 
+      "required": "true", 
+      "label": "Application Display Name", 
+      "groupName": "AppInfo", 
+      "helpMarkDown": "Application Name", 
+      "type": "string"
+    }, 
+    {
+      "name": "alias", 
+      "defaultValue": "$(name)", 
       "required": true, 
       "label": "Applicaton Alias", 
       "groupName": "AppInfo", 
-      "helpMarkDown": "Application alias. Names must not contain spaces and must be unique to the platform.", 
+      "helpMarkDown": "Application alias. Aliases must not contain spaces and must be unique to the platform, and only use DNS-entry-safe characters.", 
+      "type": "string"
+    }, 
+    {
+      "name": "description", 
+      "defaultValue": "", 
+      "required": false, 
+      "label": "Application description", 
+      "groupName": "AppInfo", 
+      "helpMarkDown": "Description of the application for display in operator and developer portals.", 
       "type": "string"
     }, 
     {
@@ -64,14 +82,14 @@
       "type": "string"
     }, 
     {
-      "name": "ignoreCertificateValidation",
-      "defaultValue": false,
-      "required": false,
-      "label": "Ignore Certificate Validation Errors",
-      "groupName": "ConnInfo",
-      "helpMarkDown": "Check this if certificate validation errors should be ignored, for example if your Apprenda Cloud Platform instance uses a self-signed certificate.",
+      "name": "ignoreCertificateValidation", 
+      "defaultValue": false, 
+      "required": false, 
+      "label": "Ignore Certificate Validation Errors", 
+      "groupName": "ConnInfo", 
+      "helpMarkDown": "Check this if certificate validation errors should be ignored, for example if your Apprenda Cloud Platform instance uses a self-signed certificate.", 
       "type": "boolean"
-    },
+    }, 
     {
       "name": "clouduser", 
       "defaultValue": "$(apprendauser)", 
@@ -110,7 +128,18 @@
   ], 
   "instanceNameFormat": "ApprendaDeploy $(message)", 
   "description": "This task deploys your application onto ACP", 
+  "author": "Apprenda", 
   "demands": [], 
+  "visibility": [
+    "Build", 
+    "Release"
+  ], 
+  "name": "ApprendaDeploy", 
+  "version": {
+    "Major": 1, 
+    "Minor": 2, 
+    "Patch": 9
+  }, 
   "groups": [
     {
       "isExpanded": true, 
@@ -123,17 +152,6 @@
       "name": "ConnInfo"
     }
   ], 
-  "author": "Apprenda", 
-  "visibility": [
-    "Build", 
-    "Release"
-  ], 
-  "version": {
-    "Major": 1, 
-    "Minor": 1, 
-    "Patch": 23
-  }, 
-  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance", 
   "friendlyName": "Apprenda - Deploy Application", 
   "execution": {
     "PowerShell3": {
@@ -142,5 +160,5 @@
   }, 
   "id": "fb765e50-c211-11e6-9471-0d5c99017b97", 
   "minimumAgentVersion": "1.95.0", 
-  "name": "ApprendaDeploy"
+  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance"
 }

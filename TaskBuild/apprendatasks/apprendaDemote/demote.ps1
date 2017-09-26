@@ -75,7 +75,7 @@ if ($ignoreCertificateValidation){
         {
             if ($app.alias -eq $alias)
             {
-                Write-Host "Application exists, chceking target version alias."
+                Write-Host "Application exists, checking target version alias."
                 $appexists = $true
                 break
             }
@@ -104,7 +104,7 @@ if ($ignoreCertificateValidation){
             if($versionexists -and $isSandbox)
             {
                 Write-Verbose "Starting demotion of app $alias at version $versionalias."
-                DemoteVersion $alias $versionalias
+                DemoteVersion $alias $versionalias $stage
                 Write-Host "Successfully demoted app $alias at version $versionalias."
             }
             else

@@ -22,7 +22,6 @@ $global:versionsURI = [string]::Empty
 $global:authURI = [string]::Empty
 $global:ApprendaSessiontoken = [string]::Empty
 $global:Headers = @{}
-$global:TargetVersion=""
 $global:DemoteFirst=$false
 ignoreCertificateValidation = $false
 

@@ -1,9 +1,6 @@
 param(
-  [string] $pathtozip,
   [string] $alias,
-  [string] $name,
-  [string] $description,
-  [string] $versionPrefix,
+  [string] $versionAlias,
   [string] $stage,
   [string] $cloudurl,
   [string] $clouduser,
@@ -28,21 +25,26 @@ $ignoreCertificateValidation = $false
 
 try {
     Write-Verbose "Gathering VSO variables."
-    $pathtozip = Get-VstsInput -Name pathtozip -Require
     $alias = Get-VstsInput -Name alias -Require
-    $versionalias = Get-VstsInput -Name versionalias -Require
+    $versionAlias = Get-VstsInput -Name versionalias
+
+    if ($versionAlias.Length -eq 0) 
+    {
+        $versionalias = Get-VstsTaskVariable -Name NewVersion -Require
+    }
+    $stage = Get-VstsInput -name stage -Require
     $cloudurl = Get-VstsInput -Name cloudurl -Require
     $clouduser = Get-VstsInput -Name clouduser -Require
     $cloudpw = Get-VstsInput -Name cloudpw -Require
     $clouddevteam = Get-VstsInput -Name clouddevteam -Require
-    $forcenewversion = Get-VstsInput -Name forcenewversion -Require
     $retainScalingSettings = Get-VstsInput -Name retainScalingSettings
     $ignoreCertificateValidation = Get-VsTsInput -name ignoreCertificateValidation
 
     Write-Verbose "****************************************************"
     Write-Verbose "*         Input Check                               "
-    Write-Verbose "* versionAlias = $versionalias"
     Write-Verbose "* alias= $alias"
+    Write-Verbose "* versionAlias = $versionalias"
+    Write-Verbose "* stage = $stage"
     Write-Verbose "* cloudurl= $cloudurl"
     Write-Verbose "* clouduser= $clouduser"
     Write-Verbose "* cloudpw= $cloudpw"
@@ -87,20 +89,20 @@ if ($ignoreCertificateValidation){
         }
         if($appexists)
         {
-            $versions = GetVersions
+            $versions = GetVersions $alias
             foreach($version in $versions)
             {
                 if($version.alias -eq $versionalias)
                 {
                     $versionexists = $true
-                    Write-Host "Located version alias, checking Stage to make sure it is not published."
+                    Write-Verbose "Located version alias, checking Stage to make sure it is not published."
                     if(($version.stage -eq "Sandbox") -or ($version.stage -eq "Definition"))
                     {
-                        Write-Host "Requested application and version are not published."
+                        Write-Host "Requested application  version is not published."
                     }
                     else
                     {
-                        Write-Error "The requested application and version are unable to be promoted because they are already in the Published stage."
+                        Write-Error "The requested application version are unable to be promoted because it is already in the Published stage."
                         $notInPublished = $false
                     }
                     break
@@ -109,12 +111,12 @@ if ($ignoreCertificateValidation){
             if($versionexists -and $notInPublished)
             {
                 Write-Verbose "Starting promotion of app $alias at version $versionalias."
-                PromoteVersion $alias $versionalias $retainScalingSettings
+                PromoteVersion $alias $versionalias $stage $retainScalingSettings
                 Write-Host "Successfully promoted app $alias at version $versionalias."
             }
             else
             {
-                Write-Error "We found the application, but it did not meet the criteria for promotion. Please check your application metadata."
+                Write-Error "Found the application, but it did not meet the criteria for promotion. Please check your application metadata."
                 exit 1
             }
         }

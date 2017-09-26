@@ -34,8 +34,12 @@ function CreateNewApplication($alias, $name, $description)
 {     
     try
     {
-        $appsBody = "{`"Name`":`"$($alias)`",`"Alias`":`"$($name)`",`"Description`":`"$($description)`"}"
-        Invoke-WebRequest -Uri $global:appsURI -Method POST -ContentType "application/json" -Headers $global:Headers -Body $appsBody -TimeoutSec 1200 -UseBasicParsing
+        if ($name.Length -eq 0){
+            $name = $alias;
+        }
+        
+        $appsBody = "{`"Name`":`"$($name)`",`"Alias`":`"$($alias)`",`"Description`":`"$($description)`"}"
+        Invoke-WebRpc $global:appsURI $appsBody
         Write-Host "   Created '$($alias)' application."
     }
     catch [System.Exception]
@@ -47,14 +51,33 @@ function CreateNewApplication($alias, $name, $description)
     }     
 }
 
+function GetResponseStreamAsJson($response)
+{
+    $stream = $null;
+    if ($response -is [System.Net.HttpWebResponse]){
+        $stream = $response.GetResponseStream()
+        $reader = new-object System.IO.StreamReader($stream)
+        if ($reader.BaseStream.CanSeek)
+        {
+            $reader.BaseStream.Position = 0;
+        }
+        $responseString = $reader.ReadToEnd();
+        return $responseString | convertfrom-json    
+    }
+    if ($response -is [Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject])
+    {
+        return $response.Content | convertfrom-json
+    }
+}
+
 function CreateNewVersion($appAlias, $versionAlias, $versionName)
 {
     try
     {
-        $versionBody = "{`"Name`":`"$($versionName)`",`"Alias`":`"$($global:targetVersion)`",`"Description`":`"$($versionName)`"}"
+        $versionBody = "{`"Name`":`"$($versionName)`",`"Alias`":`"$($versionAlias)`",`"Description`":`"$($versionName)`"}"
         $uri = $global:versionsURI + '/' + $appAlias
         Invoke-WebRequest -Uri $uri -Method POST -ContentType "application/json" -Headers $global:Headers -Body $versionBody -TimeoutSec 1200 -UseBasicParsing
-        Write-Host "   Created Version '$($versionName)' with alias '$($global:targetVersion)' for '$($appAlias)'."
+        Write-Host "   Created Version '$($versionName)' with alias '$($versionAlias))' for '$($appAlias)'."
     }
     catch [System.Exception]
     {
@@ -69,9 +92,11 @@ function UploadVersion($alias, $vAlias, $archive)
 {
     $uploadURI = $global:versionsURI + '/' + $alias + '/' + $vAlias + "?action=setArchive"
     $response = Invoke-WebRequest -Uri $uploadURI -Method POST -InFile $archive -ContentType "multipart/form-data" -Headers $global:Headers -TimeoutSec 3600 -UseBasicParsing
+    write-host Returned $response.StatusCode
     if($($response.StatusCode) -eq 200 )
     {
         Write-Host "   Archive for '$($alias)' has been uploaded."
+        write-verbose (GetResponseStreamAsJson $response)
     }
     else
     {
@@ -83,6 +108,7 @@ function UploadVersion($alias, $vAlias, $archive)
 
 function printReportCard($reportCard)
 {
+    
 	$report = [System.Collections.ArrayList]@()
     foreach ($section in $reportCard.sections)
     {
@@ -91,6 +117,7 @@ function printReportCard($reportCard)
         {
             if ($message.severity -ne "Error") 
             {
+                write-verbose -message "$($section.title)::$($message.message)"
                 continue
             }
             Write-Error -Message "$($section.title)::$($message.message)"
@@ -98,26 +125,32 @@ function printReportCard($reportCard)
     }
 }
 
-function Invoke-WebRpc($uri){
-    $request = [System.Net.WebRequest]::Create($uri)
+function Invoke-WebRpc($uri, $content){
+    write-verbose "Invoking $uri with $content"
+    $request = [System.Net.HttpWebRequest]::CreateHttp($uri)
     $request.Method = "POST"
      $request.Headers.Add("ApprendaSessionToken", $global:ApprendaSessiontoken)
-     $request.ContentLength = 0
+     if ($content -ne $null){
+         $body = [byte[]][char[]]$content
+         $request.ContentLength = $body.Length
+         $request.ContentType = "application/json"
+         $Stream = $request.GetRequestStream();
+         $Stream.Write($body, 0, $body.Length);
+     } else {
+        $request.ContentLength = 0
+     }
      try{
-        $response = $request.GetResponse() | convertfrom-Json
-        $status = $response.StatusCode
+        $response = $request.GetResponse() 
+        return GetResponseStreamAsJson $response
     } catch [System.Management.Automation.MethodInvocationException]{
         #the WebException is the inner exception here
         $webException = [System.Net.WebException]$_.Exception.InnerException
         
     if ($webException.Response -ne $null){
          $errorResponse = [System.Net.HttpWebResponse]$webException.Response
-         $status = $errorResponse.StatusCode
-         $stream = $errorResponse.GetResponseStream()
-         $reader = new-object System.IO.StreamReader($stream)
-         $reader.BaseStream.Position = 0;
-        
-         $response = $reader.ReadToEnd()  | convertfrom-json 
+         return GetResponseStreamAsJson $errorResponse
+        write-verbose "Response: $responseString"
+         $response = $responseString  | convertfrom-json 
     }
     }
 
@@ -127,10 +160,11 @@ function Invoke-WebRpc($uri){
 
 function PromoteVersion($alias, $versionAlias, $stage, $retainScalingSettings)
 {
+    Write-verbose "Promoting application $alias version $versionAlias to stage $stage, retainScaleSettings = $retainScaleSettings"
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=promote&stage=" + $stage
     if ($retainScalingSettings -eq $true){
         $promotionUri = $promotionUri + "&useScalingSettingsFrom=Published"
-        Write-Host "Using Scaling etings from Published Version"
+        Write-Host "Using Scaling Settings from Published Version"
     }
 
     $response = Invoke-WebRpc($promotionURI)
@@ -143,7 +177,7 @@ function PromoteVersion($alias, $versionAlias, $stage, $retainScalingSettings)
     else
     {
         PrintReportCard $response
-        throw "Error Promoting Application '$alias' to the $stage stage."
+        throw "Error Promoting Application '$alias' version $versionAlias to the $stage stage."
     }
 }
 
@@ -196,92 +230,10 @@ function GetVersions($alias)
     {
        # Write-Host $response
     }
-    return $response | ConvertFrom-Json
+    $versions  = $response | ConvertFrom-Json
+
+    return $versions
 
 }
 
-# This routine does all of the major version analysis, dictated by the following rules:
-# - IF a version does not exist that matches the prefix, a new one is created at 1.
-# - IF a version does exist that matches the prefix: 
-#     - If the highest version number is 1:
-#          - If version stage is published, create <prefix>2 and patch to target stage
-#          - If version stage is sandbox, definition, patch to target stage
-#     - If the highest version number n such that n > 1:
-#          - If version stage is published, create <prefix>n+1 and patch to target stage
-#          - If version stage is sandbox | definition AND ForceNewVersion flag is $true, then create <prefix>n+1 and patch to target stage
-#          - If version stage is sandbox | definition AND ForceNewVersion flas is $false, patch to target stage of version n.
-function GetTargetVersion($alias, $versionPrefix, $forceNewVersion)
-{
-    $versions = GetVersions($alias)
-    if ($versions.length -eq 1)
-    {
-        # There is only one version...
-        if ($versions[0].stage -ne "Published") 
-        {
-            # and we are in Definition or Sandbox. 
-            $global:targetVersion = "v1";
-            return;
-        }
-    }
-
-    $matchingVersions = New-Object System.Collections.ArrayList
-    # Step One - find all versions matching the prefix
-    $pattern = "$versionPrefix[0-9]*"
-    foreach($version in $versions)
-    {
-        if($version.alias -match $pattern)
-        {
-            $matchingVersions.Add(@{"valias"=$version.alias; "vstage"=$version.stage; "vh"=[int]$version.alias.Substring($versionPrefix.Length)})
-        }
-    }
-    # If no matching versions, create $versionPrefix + 1 (ie. v1)
-    if($matchingVersions.length -eq 0)
-    {
-        $global:targetVersion = $versionPrefix + "1"
-        CreateNewVersion $alias
-    }
-    # Otherwise grab the highest version number and stage.
-    else
-    {
-        $highestVersionCount = 0
-        $highestVersionStage = ""
-        # vh here will have the highest version number available
-        # we also will grab the stage of the highest version while we're here.
-        foreach($matchingVersion in $matchingVersions)
-        {
-            Write-Verbose "Version $matchingVersion.vh, $matchingVersion.vstage"
-            # since 1>0, this will always hit. 
-            if ($matchingVersion.vh -gt $highestVersionCount)
-            {
-                $highestVersionCount = $matchingVersion.vh
-                $highestVersionStage = $matchingVersion.vstage
-            }
-            Write-Verbose "After iteration, highest version is : $highestversionCount with stage: $highestVersionStage"
-        }
-        # 1.10.17 - version 0.0.18
-        # as a safeguard - we may have a version with a new prefix while other versions exist. so if we are still zero, use (versionPrefix)1
-        if ($highestVersionCount -eq 0)
-        {
-            $highestVersionCount = 1
-        }
-        # issue 1 - this functionality needs to be split out a bit
-        if (($highestVersionCount -gt 1 -and (($highestVersionStage -eq "Published") -or ($forceNewVersion -eq $true))) -or
-        ($highestVersionCount -eq 1 -and $highestVersionStage -eq "Published"))
-        {
-            $highestVersionCount = $highestVersionCount +  1
-            $global:targetVersion = $versionPrefix + $highestVersionCount 
-            CreateNewVersion $alias
-        }
-        else
-        {
-            if($highestVersionStage -eq "Sandbox")
-            {
-                # we have to demote first before we can patch. ugh.
-                $global:DemoteFirst=$true
-            }
-            $global:targetVersion = $versionPrefix + $highestVersionCount
-        }
-        Write-Verbose "Global Target Version: $global:targetVersion"
-    }
-}
 

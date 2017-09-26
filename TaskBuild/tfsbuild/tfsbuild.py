@@ -8,7 +8,8 @@ import logging
 import platform
 
 # github issue #7 - define our tasks 
-EXTENSION_TASKS = ['apprendaDemote', 'apprendaDeploy', 'apprendaPromote', 'apprendaScale']
+EXTENSION_TASKS = ['apprendaDemote', 'apprendaDeploy', 'apprendaPromote', 'apprendaScale', 'apprendaDelete']
+GETVERSION_TASKS = ['apprendaDeploy']
 
 # github issue #12 - we're forcing the change of the path now so relative files should work everywhere
 # except probably mac osx
@@ -94,6 +95,10 @@ def deploy_common_updates():
     for destination in EXTENSION_TASKS:
         dest_path = '../apprendatasks/{0}/common.ps1'.format(destination)
         shutil.copyfile('../common/common.ps1', dest_path)
+    for destination in GETVERSION_TASKS:
+        dest_path = '../apprendatasks/{0}/GetTargetVersion.ps1'.format(destination)
+        shutil.copyfile('../common/GetTargetVersion.ps1', dest_path)
+        
 
 
 def run(build_type, mock=False, nobackup=False):
