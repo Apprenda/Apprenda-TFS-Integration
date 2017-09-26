@@ -162,7 +162,7 @@ function PromoteVersion($alias, $versionAlias, $stage, $retainScalingSettings)
 {
     Write-verbose "Promoting application $alias version $versionAlias to stage $stage, retainScaleSettings = $retainScaleSettings"
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=promote&stage=" + $stage
-    if ($retainScalingSettings -eq $true){
+    if ($retainScalingSettings -eq $true -and $versionAlias -ne "v1" ){
         $promotionUri = $promotionUri + "&useScalingSettingsFrom=Published"
         Write-Host "Using Scaling Settings from Published Version"
     }
@@ -230,11 +230,7 @@ function GetVersions($alias)
     {
        # Write-Host $response
     }
-
-    Write-Verbose $response
     $versions  = $response | ConvertFrom-Json
-
-    Write-Verbose ($versions | format-list -property name,alias,stage,state| out-string)
 
     return $versions
 

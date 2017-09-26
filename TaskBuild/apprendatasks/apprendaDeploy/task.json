@@ -128,17 +128,17 @@
   ], 
   "instanceNameFormat": "ApprendaDeploy $(message)", 
   "description": "This task deploys your application onto ACP", 
-  "author": "Apprenda", 
   "demands": [], 
+  "author": "Apprenda", 
   "visibility": [
     "Build", 
     "Release"
   ], 
-  "name": "ApprendaDeploy", 
+  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance", 
   "version": {
     "Major": 1, 
     "Minor": 2, 
-    "Patch": 9
+    "Patch": 10
   }, 
   "groups": [
     {
@@ -160,5 +160,5 @@
   }, 
   "id": "fb765e50-c211-11e6-9471-0d5c99017b97", 
   "minimumAgentVersion": "1.95.0", 
-  "helpMarkDown": "Deploys an application archive to an Apprenda Cloud instance"
+  "name": "ApprendaDeploy"
 }
