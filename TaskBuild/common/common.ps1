@@ -17,7 +17,7 @@ function GetSessionToken($body)
 {    
     try 
     {
-        Write-Verbose "Starting authentication method to Apprenda Environment."
+        Write-Host "Starting authentication method to Apprenda Environment."
         $jsonOutput = Invoke-RestMethod -Uri $global:authURI -Method Post -ContentType "application/json" -Body $body -TimeoutSec 600
         $global:ApprendaSessiontoken = $jsonOutput.apprendaSessionToken
         #Write-Host "The Apprenda session token is: '$global:ApprendaSessiontoken'"
@@ -96,7 +96,7 @@ function UploadVersion($alias, $vAlias, $archive)
     if($($response.StatusCode) -eq 200 )
     {
         Write-Host "   Archive for '$($alias)' has been uploaded."
-        write-verbose (GetResponseStreamAsJson $response)
+        Write-Host (GetResponseStreamAsJson $response)
     }
     else
     {
@@ -117,7 +117,7 @@ function printReportCard($reportCard)
         {
             if ($message.severity -ne "Error") 
             {
-                write-verbose -message "$($section.title)::$($message.message)"
+                Write-Host -message "$($section.title)::$($message.message)"
                 continue
             }
             Write-Error -Message "$($section.title)::$($message.message)"
@@ -126,7 +126,7 @@ function printReportCard($reportCard)
 }
 
 function Invoke-WebRpc($uri, $content){
-    write-verbose "Invoking $uri with $content"
+    Write-Host "Invoking $uri with $content"
     $request = [System.Net.HttpWebRequest]::CreateHttp($uri)
     $request.Method = "POST"
      $request.Headers.Add("ApprendaSessionToken", $global:ApprendaSessiontoken)
@@ -149,7 +149,7 @@ function Invoke-WebRpc($uri, $content){
     if ($webException.Response -ne $null){
          $errorResponse = [System.Net.HttpWebResponse]$webException.Response
          return GetResponseStreamAsJson $errorResponse
-        write-verbose "Response: $responseString"
+        Write-Host "Response: $responseString"
          $response = $responseString  | convertfrom-json 
     }
     }
@@ -160,7 +160,7 @@ function Invoke-WebRpc($uri, $content){
 
 function PromoteVersion($alias, $versionAlias, $stage, $retainScalingSettings)
 {
-    Write-verbose "Promoting application $alias version $versionAlias to stage $stage, retainScaleSettings = $retainScaleSettings"
+    Write-Host "Promoting application $alias version $versionAlias to stage $stage, retainScalingSettings = $retainScalingSettings"
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=promote&stage=" + $stage
     if ($retainScalingSettings -eq $true -and $versionAlias -ne "v1" ){
         $promotionUri = $promotionUri + "&useScalingSettingsFrom=Published"
@@ -169,7 +169,7 @@ function PromoteVersion($alias, $versionAlias, $stage, $retainScalingSettings)
 
     $response = Invoke-WebRpc($promotionURI)
 
-    if($($response.success) -eq $true )
+    if ($($response.success) -eq $true )
     {
         Write-Host "Application '$alias' has been Promoted to the '$stage' stage." -ForegroundColor Green
         return 0
@@ -187,7 +187,7 @@ function DemoteVersion($alias, $versionAlias)
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=demote"
     $response = Invoke-WebRequest -Uri $promotionURI -Method POST -ContentType "application/json" -Headers $global:Headers -TimeoutSec 3600 -UseBasicParsing
         
-    if($($response.StatusCode) -eq 200 )
+    if ($($response.StatusCode) -eq 200 )
     {
         Write-Host "Application '$alias' has been Demoted." -ForegroundColor Green
     }
