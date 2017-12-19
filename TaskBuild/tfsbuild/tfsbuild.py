@@ -1,5 +1,6 @@
 # tfsbuild.py
 # this updates the release version of the tfs integration and then builds the extension
+# requires "npm install -g tfx-cli"
 import json
 import os
 import shutil

@@ -14,8 +14,8 @@ function FormatAuthBody ($Username, $Password, $tenantAlias)
 }
 
 function GetSessionToken($body)
-{    
-    try 
+{
+    try
     {
         Write-Host "Starting authentication method to Apprenda Environment."
         $jsonOutput = Invoke-RestMethod -Uri $global:authURI -Method Post -ContentType "application/json" -Body $body -TimeoutSec 600
@@ -26,18 +26,18 @@ function GetSessionToken($body)
     {
         $exceptionMessage = $_.Exception.ToString()
         Write-Error "Caught exception $exceptionMessage during execution of GetSessionToken for URI '$global:authURI'. Skipping Tenant..."
-    }  
+    }
 }
 
 
 function CreateNewApplication($alias, $name, $description)
-{     
+{
     try
     {
         if ($name.Length -eq 0){
             $name = $alias;
         }
-        
+
         $appsBody = "{`"Name`":`"$($name)`",`"Alias`":`"$($alias)`",`"Description`":`"$($description)`"}"
         Invoke-WebRpc $global:appsURI $appsBody
         Write-Host "   Created '$($alias)' application."
@@ -48,13 +48,15 @@ function CreateNewApplication($alias, $name, $description)
         Write-Host "   Caught exception $exceptionMessage during execution of CreateApps for App '$($alias)'." -ForegroundColor Red -BackgroundColor Black
         Write-Host ""
         continue
-    }     
+    }
 }
 
 function GetResponseStreamAsJson($response)
 {
     $stream = $null;
-    if ($response -is [System.Net.HttpWebResponse]){
+
+    if ($response -is [System.Net.HttpWebResponse])
+    {
         $stream = $response.GetResponseStream()
         $reader = new-object System.IO.StreamReader($stream)
         if ($reader.BaseStream.CanSeek)
@@ -62,12 +64,18 @@ function GetResponseStreamAsJson($response)
             $reader.BaseStream.Position = 0;
         }
         $responseString = $reader.ReadToEnd();
-        return $responseString | convertfrom-json    
+        Write-Host "Response String = " + $responseString
+        return $responseString | convertfrom-json
     }
+
     if ($response -is [Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject])
     {
+        Write-Host "Response Content = " + $($response.Content)
         return $response.Content | convertfrom-json
     }
+
+    Write-Host "Returning $null  - Response = " + $response
+    return $null
 }
 
 function CreateNewVersion($appAlias, $versionAlias, $versionName)
@@ -85,7 +93,7 @@ function CreateNewVersion($appAlias, $versionAlias, $versionName)
         Write-Host "   Caught exception $exceptionMessage during execution of CreateVersion for Version '$($verInfo.alias)' of '$($appInfo.alias)'." -ForegroundColor Red -BackgroundColor Black
         Write-Host ""
         continue
-    }    
+    }
 }
 
 function UploadVersion($alias, $vAlias, $archive)
@@ -101,21 +109,21 @@ function UploadVersion($alias, $vAlias, $archive)
     else
     {
         $Host.UI.WriteErrorLine("   Error Uploading Binaries for Application '$($appInfo.alias)'")
-        $Host.UI.WriteErrorLine($($responseObject.message))     
+        $Host.UI.WriteErrorLine($($responseObject.message))
         return $false
     }
 }
 
 function printReportCard($reportCard)
 {
-    
+
 	$report = [System.Collections.ArrayList]@()
     foreach ($section in $reportCard.sections)
     {
 		$sectioned = $false
         foreach ($message in $section.messages)
         {
-            if ($message.severity -ne "Error") 
+            if ($message.severity -ne "Error")
             {
                 Write-Host -message "$($section.title)::$($message.message)"
                 continue
@@ -126,35 +134,43 @@ function printReportCard($reportCard)
 }
 
 function Invoke-WebRpc($uri, $content){
-    Write-Host "Invoking $uri with $content"
-    $request = [System.Net.HttpWebRequest]::CreateHttp($uri)
-    $request.Method = "POST"
+     Write-Host "Invoking $uri with $content"
+     $request = [System.Net.HttpWebRequest]::CreateHttp($uri)
+     $request.Method = "POST"
      $request.Headers.Add("ApprendaSessionToken", $global:ApprendaSessiontoken)
-     if ($content -ne $null){
+
+     if ($content -ne $null)
+     {
          $body = [byte[]][char[]]$content
          $request.ContentLength = $body.Length
          $request.ContentType = "application/json"
          $Stream = $request.GetRequestStream();
          $Stream.Write($body, 0, $body.Length);
-     } else {
+     }
+     else
+     {
         $request.ContentLength = 0
      }
-     try{
-        $response = $request.GetResponse() 
+
+     try
+     {
+        $response = $request.GetResponse()
         return GetResponseStreamAsJson $response
-    } catch [System.Management.Automation.MethodInvocationException]{
+     }
+     catch [System.Management.Automation.MethodInvocationException]
+     {
+
         #the WebException is the inner exception here
         $webException = [System.Net.WebException]$_.Exception.InnerException
-        
-    if ($webException.Response -ne $null){
-         $errorResponse = [System.Net.HttpWebResponse]$webException.Response
-         return GetResponseStreamAsJson $errorResponse
-        Write-Host "Response: $responseString"
-         $response = $responseString  | convertfrom-json 
-    }
-    }
 
-    return $response
+        if ($webException.Response -ne $null)
+        {
+            $errorResponse = [System.Net.HttpWebResponse]$webException.Response
+            return GetResponseStreamAsJson $errorResponse
+        }
+     }
+
+     return $response
 }
 
 
@@ -186,7 +202,7 @@ function DemoteVersion($alias, $versionAlias)
 {
     $promotionURI = $global:versionsURI + '/' + $alias + '/' + $versionAlias + "?action=demote"
     $response = Invoke-WebRequest -Uri $promotionURI -Method POST -ContentType "application/json" -Headers $global:Headers -TimeoutSec 3600 -UseBasicParsing
-        
+
     if ($($response.StatusCode) -eq 200 )
     {
         Write-Host "Application '$alias' has been Demoted." -ForegroundColor Green
@@ -194,7 +210,7 @@ function DemoteVersion($alias, $versionAlias)
     else
     {
         $Host.UI.WriteErrorLine("Error Demoting Application '$alias' to the $stage stage.")
-        $Host.UI.WriteErrorLine($($responseObject.message))     
+        $Host.UI.WriteErrorLine($($responseObject.message))
     }
 }
 
@@ -235,5 +251,3 @@ function GetVersions($alias)
     return $versions
 
 }
-
-
