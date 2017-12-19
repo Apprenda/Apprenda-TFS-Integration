@@ -1,8 +1,8 @@
 ﻿# Include the common library in the checks
 . "..\common\common.ps1"
 
-$baseURI  = "https://apps.oracle.apprendalabs.com/"
-$authJSON = '{"username":"mmichael@apprenda.com","password":"password"}'
+$baseURI  = "https://<apprenda URL>/"
+$authJSON = '{"username":"<username>","password":"<insert password>"}'
 $global:ApprendaSessiontoken = [string]::Empty
 
 function GetSessionToken($body, $authURI)
