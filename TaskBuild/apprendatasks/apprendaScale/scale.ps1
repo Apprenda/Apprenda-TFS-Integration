@@ -47,7 +47,7 @@ try {
     Write-Verbose "* alias= $alias"
     Write-Verbose "* cloudurl= $cloudurl"
     Write-Verbose "* clouduser= $clouduser"
-    Write-Verbose "* cloudpw= $cloudpw"
+    Write-Verbose "* cloudpw= <not logged>"
     Write-Verbose "* clouddevteam= $clouddevteam"
     Write-Verbose "* stage= $stage"
     Write-Verbose "* ignoreCertificateValidation = $ignoreCertificateValidation"
@@ -67,7 +67,6 @@ try {
     Write-Verbose "Disabling HTTPS certificate validation"
     EnableTrustAllCerts
 }
-    Write-Verbose "devAuthJson: $devAuthJSON"
     GetSessionToken $devAuthJSON
 
     

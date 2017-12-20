@@ -38,7 +38,7 @@ try {
     Write-Verbose "* alias= $alias"
     Write-Verbose "* cloudurl= $cloudurl"
     Write-Verbose "* clouduser= $clouduser"
-    Write-Verbose "* cloudpw= $cloudpw"
+    Write-Verbose "* cloudpw= <not logged>"
     Write-Verbose "* clouddevteam= $clouddevteam"
     Write-Verbose "* ignoreCertificateValidation= $ignoreCertificateValidation"
     Write-Verbose "****************************************************"
@@ -56,7 +56,6 @@ if ($ignoreCertificateValidation){
     FormatURL $AuthenticationEndpointURI $cloudurl ([ref]$global:authURI)
     Write-Verbose "global:authuri: $global:authURI"
     $devAuthJSON = FormatAuthBody $clouduser $cloudpw $clouddevteam
-    Write-Verbose "devAuthJson: $devAuthJSON"
     GetSessionToken $devAuthJSON
 
     

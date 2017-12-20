@@ -57,7 +57,7 @@ try {
     Write-Verbose "* stage= $stage"
     Write-Verbose "* cloudurl= $cloudurl"
     Write-Verbose "* clouduser= $clouduser"
-    Write-Verbose "* cloudpw= $cloudpw"
+    Write-Verbose "* cloudpw= <not logged>"
     Write-Verbose "* clouddevteam= $clouddevteam"
     Write-Verbose "* retainScalingSettings= $retainScalingSettings"
     Write-Verbose "* ignoreCertificateValidation= $ignoreCertificateValidation"
