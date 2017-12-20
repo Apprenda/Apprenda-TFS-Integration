@@ -3,82 +3,82 @@
     {
       "path": "apprendatasks"
     }
-  ],
-  "publisher": "apprenda-inc",
-  "manifestVersion": 1,
+  ], 
+  "publisher": "apprenda-inc", 
+  "manifestVersion": 1, 
   "targets": [
     {
       "id": "Microsoft.VisualStudio.Services"
     }
-  ],
-  "description": "Tools for deploying your application to the Apprenda Cloud Platform.",
+  ], 
+  "description": "Tools for deploying your application to the Apprenda Cloud Platform.", 
   "icons": {
     "default": "logo.jpg"
-  },
+  }, 
   "galleryFlags": [
     "Public"
-  ],
+  ], 
   "content": {
     "details": {
       "path": "overview.md"
     }
-  },
-  "version": "2.0.0", 
+  }, 
+  "version": "2.0.2", 
   "contributions": [
     {
-      "id": "apprendaDemote",
-      "type": "ms.vss-distributed-task.task",
       "properties": {
         "name": "apprendatasks/apprendaDemote"
-      },
+      }, 
+      "type": "ms.vss-distributed-task.task", 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ]
-    },
+      ], 
+      "id": "apprendaDemote"
+    }, 
     {
-      "id": "apprendaDeploy",
-      "type": "ms.vss-distributed-task.task",
       "properties": {
         "name": "apprendatasks/apprendaDeploy"
-      },
+      }, 
+      "type": "ms.vss-distributed-task.task", 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ]
-    },
+      ], 
+      "id": "apprendaDeploy"
+    }, 
     {
-      "id": "apprendaPackage",
-      "type": "ms.vss-distributed-task.task",
       "properties": {
         "name": "apprendatasks/apprendaPackage"
-      },
+      }, 
+      "type": "ms.vss-distributed-task.task", 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ]
-    },
+      ], 
+      "id": "apprendaPackage"
+    }, 
     {
-      "id": "apprendaPromote",
-      "type": "ms.vss-distributed-task.task",
       "properties": {
         "name": "apprendatasks/apprendaPromote"
-      },
+      }, 
+      "type": "ms.vss-distributed-task.task", 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ]
-    },
+      ], 
+      "id": "apprendaPromote"
+    }, 
     {
-      "id": "apprendaScale",
-      "type": "ms.vss-distributed-task.task",
       "properties": {
         "name": "apprendatasks/apprendaScale"
-      },
+      }, 
+      "type": "ms.vss-distributed-task.task", 
       "targets": [
         "ms.vss-distributed-task.tasks"
-      ]
+      ], 
+      "id": "apprendaScale"
     }
-  ],
-  "id": "apprendatasks",
+  ], 
+  "id": "apprendatasks", 
   "categories": [
     "Build and release"
-  ],
+  ], 
   "name": "Apprenda Build Tools"
 }
