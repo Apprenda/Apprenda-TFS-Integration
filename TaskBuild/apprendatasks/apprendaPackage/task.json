@@ -4,7 +4,7 @@
   "friendlyName": "Apprenda - Package .NET Application",
   "description": "This task packages an application for deployment to an Apprenda Cloud.",
   "author": "Apprenda",
-  "helpMarkDown": "This task [packages an application](http://docs.apprenda.com/6-0/creating-app-archives) for deployment to an Apprenda Cloud in the Apprenda documentation.",
+  "helpMarkDown": "This task [packages an application](http://docs.apprenda.com/6-0/creating-app-archives) for deployment to an Apprenda Cloud as described in the Apprenda documentation.",
   "category": "Package",
   "visibility": [
     "Build",
@@ -14,7 +14,7 @@
   "version": {
     "Major": "2",
     "Minor": "0",
-    "Patch": "2"
+    "Patch": "3"
   },
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "ApprendaPackage $(message)",
